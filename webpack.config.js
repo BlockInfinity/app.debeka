@@ -3,22 +3,14 @@ var webpack = require('webpack');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 var config = {
-    entry: {
-        app: [
-            'webpack-dev-server/client?http://localhost:8000',
-            'webpack/hot/only-dev-server',
-            './app/index'
-        ],
-        vendor: []
-    },
+    entry: './app/index',
     watchOptions: {
         poll: true
     },
     devtool: 'eval',
     output: {
         path: path.join(__dirname, '/public/'),
-        filename: 'bundle.js',
-        publicPath: '/'
+        filename: 'bundle.js'
     },
     plugins: [
         new ExtractTextPlugin("styles.css"),
@@ -62,6 +54,5 @@ var config = {
         ]
     }
 };
-
 
 module.exports = config;

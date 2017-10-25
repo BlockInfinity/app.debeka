@@ -1,16 +1,20 @@
-var webpack = require('webpack');
-var WebpackDevServer = require('webpack-dev-server');
-var config = require('./webpack.config');
 var path = require("path");
+const express = require('express');
+const app = express();
 
-new WebpackDevServer(webpack(config), {
-    publicPath: config.output.publicPath,
-    hot: true,
-    historyApiFallback: true,
-    contentBase: "public/"
-}).listen(8000, 'localhost', function (error) {
-        if (error) {
-            return console.log(error);
-        }
-        console.log('Server running at http://localhost:8000/');
-    });
+
+// app.use('/abi', express.static(path.join(__dirname, 'bc.ico.contractdeployer', 'truffle', 'build', 'contracts')));
+
+app.use('/', express.static('public'))
+
+app.get('/abi/EnergySystemTokenFactory.json', (req, res) => {
+    res.sendFile(path.join(__dirname, 'bc.ico.contractdeployer', 'truffle', 'build', 'contracts', 'EnergySystemTokenFactory.json'))
+})
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "index.html"));
+})
+
+app.listen(8000, function() {
+    console.log('Example app listening on port 8000!');
+});
