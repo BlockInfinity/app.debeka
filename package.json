@@ -3,7 +3,7 @@
   "version": "2.7.0",
   "scripts": {
     "start": "npm-run-all --parallel start:server start:build start:testrpc",
-    "start:server": "DEBUG='express:*' sudo nodemon server.js",
+    "start:server": "DEBUG='express:*' nodemon server.js",
     "start:build": "webpack --watch --config webpack.config.js",
     "start:testrpc": "testrpc -m 'snake ozone true betray silver fault slice destroy file sweet comic naive' --accounts 100 --gasLimit 0x7A1200",
     "build": "BABEL_ENV=production ./node_modules/.bin/webpack --config webpack.config.production.js"
