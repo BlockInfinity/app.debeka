@@ -11,6 +11,9 @@ var config = {
         ],
         vendor: []
     },
+    watchOptions: {
+        poll: true
+    },
     devtool: 'eval',
     output: {
         path: path.join(__dirname, '/public/'),
@@ -34,8 +37,7 @@ var config = {
     ],
     module: {
         noParse: [],
-        loaders: [
-            {
+        loaders: [{
                 test: /\.js$/,
                 loaders: ['react-hot', 'babel'],
                 include: path.join(__dirname, 'app')
