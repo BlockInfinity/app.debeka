@@ -12,8 +12,8 @@ app.get('/EnergySystemTokenFactory', (req, res) => {
 	server.getEnergySystemTokenFactory(req,res); 
 })
 
-app.get('/EnergySystemToken', (req, res) => {
-	server.getEnergySystemToken(req, res);
+app.get('/EnergySystemTokens', (req, res) => {
+	server.getEnergySystemTokens(req, res);
 })
 
 app.get('/transactionReceipt', (req, res) => {

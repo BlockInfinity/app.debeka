@@ -22,7 +22,8 @@ window.accountStatus = function(_address) {
     return web3.eth.getBalance(_address);
 }
 
-// initiales anlegen eines energy system
+// initiales anlegen eines energysystemtoken contracts. 
+// Jener contract wird über eine contract factory erstellt. Auf server seite wird sicher gestellt, dass jene factory deployed ist. 
 window.createEnergySystem = function(_anzahlTokens, _name, _beschreibung) {
 
     return fetch('./EnergySystemTokenFactory').then(response => {
@@ -38,14 +39,12 @@ window.createEnergySystem = function(_anzahlTokens, _name, _beschreibung) {
             window.contract = contract;
             window.factory = contract.at(address);
             return new Promise((resolve, reject) => {
-                factory.createEnergySystemToken((error, result) => {
+                factory.createEnergySystemToken((error, txhash) => {
                     if (error) {
                         reject(error);
                     }
-                    console.log("executed", result)
-                    resolve("executed");
-
-                    // todo: hier muss jetzt noch auf das creation event gelauscht werden  
+                    console.log("EnergySystemToken Creation txhash: ", txhash)
+                    resolve(txhash);
                 })
             }).catch(err => {
                 console.log(`${err} createEnergySystemToken`)
@@ -58,30 +57,31 @@ window.createEnergySystem = function(_anzahlTokens, _name, _beschreibung) {
     })
 }
 
-
-function getEnergySystemData(_address) {
-
+// retrieves all EnergySystemTokenCreationEvents for logged in user. Important for getting the estoken contract addresses for the user. 
+window.getEnergySystemTokens = function() {
+    return fetch(`./EnergySystemTokens?userAddress=${web3.eth.defaultAccount}`).then(response => {
+        return response.json();
+    }).then(res => {
+        return res;
+    });
 }
 
-// verkaufen von shares
-function sellEnergySystemShares(_address, _anzahlTokens, _price) {
+// // verkaufen von shares
+// function sellEnergySystemShares(_address, _anzahlTokens, _price) {
 
-}
+// }
 
-// list of anzahlToken/price pairs
-function getSellEnergySystemShares(_address) {
+// // list of anzahlToken/price pairs
+// function getSellEnergySystemShares(_address) {
 
-}
+// }
 
-function buyEnergySystemShares(_address, _anzahlTokens, _price) {
+// function buyEnergySystemShares(_address, _anzahlTokens, _price) {
 
-}
+// }
 
-// list of anzahlToken/price pairs
-function getBuyEnergySystemShares(_address) {
+// // list of anzahlToken/price pairs
+// function getBuyEnergySystemShares(_address) {
 
-}
+// }
 
-module.exports = {
-
-}
