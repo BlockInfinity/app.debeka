@@ -54,3 +54,5 @@ public/0.*
 *.hot-update.json
 public/styles.css
 public/vendor.js
+
+server/contractData/
