@@ -25,26 +25,26 @@ window.accountStatus = function(_address) {
 // initiales anlegen eines energy system
 window.createEnergySystem = function(_anzahlTokens, _name, _beschreibung) {
 
-    // todo: fetch factory contract address from server. server checks if deployed. if not factory gets deployed.
-    let factoryaddress = "0x909425c5b7fa2422fdfba2dead7c4267af2fce1f";
-
-    return fetch('./abi/EnergySystemTokenFactory.json').then(response => {
+    return fetch('./EnergySystemTokenFactory').then(response => {
+        console.log("got reponse");
         if (response.status !== 200) {
             let msg = `Looks like there was a problem. Status Code: + ${response.status}`
             reject(msg);
         }
         return response.json().then(function(data) {
             let abi = data.abi;
+            let address = data.address;
             let contract = web3.eth.contract(abi);
             window.contract = contract;
-            window.factory = contract.at(factoryaddress);
+            window.factory = contract.at(address);
             return new Promise((resolve, reject) => {
                 factory.createEnergySystemToken((error, result) => {
                     if (error) {
                         reject(error);
                     }
-                    console.log("executed")
+                    console.log("executed", result)
                     resolve("executed");
+
                     // todo: hier muss jetzt noch auf das creation event gelauscht werden  
                 })
             }).catch(err => {
@@ -54,7 +54,7 @@ window.createEnergySystem = function(_anzahlTokens, _name, _beschreibung) {
             console.log(`${err} in response.json`)
         })
     }).catch(function(err) {
-        console.log('Fetch Error :-S', err);
+        console.log('Fetch Error', err);
     })
 }
 

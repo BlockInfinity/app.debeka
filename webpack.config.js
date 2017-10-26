@@ -5,7 +5,8 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var config = {
     entry: './app/index',
     watchOptions: {
-        poll: true
+        poll: true,
+        ignored: './server/contractData/'
     },
     devtool: 'eval',
     output: {

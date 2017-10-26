@@ -1,4 +1,5 @@
-var path = require("path");
+const path = require("path");
+const server = require('./server/blockchain.js');
 const express = require('express');
 const app = express();
 
@@ -7,8 +8,16 @@ const app = express();
 
 app.use('/', express.static('public'))
 
-app.get('/abi/EnergySystemTokenFactory.json', (req, res) => {
-    res.sendFile(path.join(__dirname, 'bc.ico.contractdeployer', 'truffle', 'build', 'contracts', 'EnergySystemTokenFactory.json'))
+app.get('/EnergySystemTokenFactory', (req, res) => {
+	server.getEnergySystemTokenFactory(req,res); 
+})
+
+app.get('/EnergySystemToken', (req, res) => {
+	server.getEnergySystemToken(req, res);
+})
+
+app.get('/transactionReceipt', (req, res) => {
+	server.getTransactionReceipt(req, res);
 })
 
 app.get('/', (req, res) => {

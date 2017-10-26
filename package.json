@@ -2,8 +2,8 @@
   "name": "inspinia-reactjs",
   "version": "2.7.0",
   "scripts": {
-    "start": "npm-run-all --parallel start:server start:build start:testrpc",
-    "start:server": "DEBUG='express:*' nodemon server.js",
+    "start": "npm-run-all --parallel start:server start:testrpc start:build",
+    "start:server": "DEBUG='express:*' nodeUrl='http://localhost:8545' nodemon --ignore './server/contractData/' server.js",
     "start:build": "webpack --watch --config webpack.config.js",
     "start:testrpc": "testrpc -m 'snake ozone true betray silver fault slice destroy file sweet comic naive' --accounts 100 --gasLimit 0x7A1200",
     "build": "BABEL_ENV=production ./node_modules/.bin/webpack --config webpack.config.production.js"
@@ -41,10 +41,13 @@
     "jquery": "^3.1.1",
     "jquery-slimscroll": "^1.3.6",
     "metismenu": "^2.5.0",
+    "npm-run-all": "^4.1.1",
     "react": "^0.14.6",
     "react-bootstrap": "^0.28.3",
     "react-dom": "^0.14.6",
     "react-pace": "^1.0.0",
-    "react-router": "^2.7.0"
+    "react-router": "^2.7.0",
+    "solc": "^0.4.18",
+    "web3": "^0.19.0"
   }
 }
