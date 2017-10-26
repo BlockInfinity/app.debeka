@@ -4,6 +4,7 @@ const path = require('path');
 const Web3 = require('web3');
 const solc = require('solc');
 
+
 const pathContractData = path.join('./', 'server', 'contractData',
     'EnergySystemTokenFactoryAndAddress.json');
 const pathEnergySystemTokenFactory = path.join('./', 'bc.ico.contractdeployer', 'truffle',
@@ -28,7 +29,9 @@ if (!process.env.nodeUrl) {
     throw new Error("process.env.nodeUrl not set")
 }
 
+
 let web3 = connect();
+
 
 function connect(bcUrl = 'http://localhost:8545') {
     let web3 = new Web3(new Web3.providers.HttpProvider(process.env.nodeUrl));
@@ -74,7 +77,6 @@ module.exports.getEnergySystemTokenFactory = (req, response) => {
                     return;
                 }
             }
-
             // file does not exist || contract is not deployed || or sth. else
             fs.readFile(pathToken, 'utf8', (err, dataToken) => {
                 if (err) throw err;
@@ -88,7 +90,6 @@ module.exports.getEnergySystemTokenFactory = (req, response) => {
                                 console.log("file does not exist || contract is not deployed || or sth. else")
                                 if (err) throw err;
                                 // compile and extract data for contract creation
-
                                 let input = {
                                     'EnergySystemTokenFactory.sol': dataFactory,
                                     'EnergySystemToken.sol': dataEstoken,
@@ -111,9 +112,6 @@ module.exports.getEnergySystemTokenFactory = (req, response) => {
                                         console.log(err);
                                         return;
                                     }
-
-                                    console.log(instance.transactionHash);
-
                                     if (instance.address) {
                                         console.log('Contract address: ' + instance.address);
 
@@ -149,13 +147,11 @@ module.exports.getTransactionReceipt = (request, response) => {
     console.log(request.query);
     // response.json(request.query);
     let receipt = web3.eth.getTransactionReceipt(txhash);
-
     response.json({ transactionReceipt: receipt })
-
 }
 
-module.exports.getEnergySystemToken = (request, response) => {
 
+module.exports.getEnergySystemTokens = (request, response) => {
     let userAddress;
     if (request.query.userAddress) {
         userAddress = request.query.userAddress;
@@ -163,7 +159,6 @@ module.exports.getEnergySystemToken = (request, response) => {
         res.send("UserAddress as query parameter is missing.");
         return;
     }
-
     fs.readFile(pathContractData, (err, data) => {
         // file exists 
         if (!err) {
@@ -177,7 +172,7 @@ module.exports.getEnergySystemToken = (request, response) => {
                 console.log(web3.eth.getCode(address))
                 let contract = web3.eth.contract(abi);
                 let instance = contract.at(address);
-
+                // todo: auf richtiger blockchain muss der Parameter fromBlock angepasst werden, ansonsten dauert die Suche zu lange. 
                 instance.EnergySystemTokenCreationEvent({ _from: userAddress }, { fromBlock: 0, toBlock: 'latest' }).get((error, eventResult) => {
                     if (error) {
                         console.log('Error in myEvent event handler: ' + error);
@@ -186,8 +181,6 @@ module.exports.getEnergySystemToken = (request, response) => {
                         response.json(eventResult);
                     }
                 });
-
-
             }
         }
     });
