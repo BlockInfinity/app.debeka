@@ -196,7 +196,7 @@ module.exports.getLastEnergySystemTokenAddressForUser = (request, response) => {
         let _contract = events[0].args._contract;
         let _from = events[0].args._from;
 
-        response.json({ _from, _contract, blockNumber, transactionHash });
+        response.json({ from: _from, contract: _contract, blockNumber, transactionHash });
     })
 }
 
