@@ -6,7 +6,7 @@ var config = {
 
     entry: {
         bundle: './app/index',
-        apiTest: "./app/mochaTests/apiTest.test.js",
+        apiTest: "./app/mochaTests/apiTest.js",
     },
     output: {
         path: path.join(__dirname, '/public/'),
