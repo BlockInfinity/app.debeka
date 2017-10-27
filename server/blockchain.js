@@ -151,37 +151,66 @@ module.exports.getTransactionReceipt = (request, response) => {
 }
 
 
-module.exports.getEnergySystemTokens = (request, response) => {
-    let userAddress;
-    if (request.query.userAddress) {
-        userAddress = request.query.userAddress;
-    } else {
-        res.send("UserAddress as query parameter is missing.");
-        return;
-    }
-    fs.readFile(pathContractData, (err, data) => {
-        // file exists 
-        if (!err) {
-            console.log("EnergySystemTokenFactoryAndAddress.json exists");
-            data = JSON.parse(data);
-            let abi = data.abi;
-            let address = data.address;
-            // if contract is deployed then return 
-            if (web3.eth.getCode(address).length > 4) {
-                console.log("EnergySystemTokenFactory is deployed.")
-                console.log(web3.eth.getCode(address))
-                let contract = web3.eth.contract(abi);
-                let instance = contract.at(address);
-                // todo: auf richtiger blockchain muss der Parameter fromBlock angepasst werden, ansonsten dauert die Suche zu lange. 
-                instance.EnergySystemTokenCreationEvent({ _from: userAddress }, { fromBlock: 0, toBlock: 'latest' }).get((error, eventResult) => {
-                    if (error) {
-                        console.log('Error in myEvent event handler: ' + error);
-                    } else {
-                        console.log('myEvent: ' + JSON.stringify(eventResult));
-                        response.json(eventResult);
-                    }
-                });
-            }
+function getEnergySystemTokens(request, response) {
+    return new Promise((resolve, reject) => {
+        let userAddress;
+        if (request.query.userAddress) {
+            userAddress = request.query.userAddress;
+        } else {
+            response.send("UserAddress as query parameter is missing.");
+            return;
         }
-    });
+        fs.readFile(pathContractData, (err, data) => {
+            // file exists 
+            if (!err) {
+                console.log("EnergySystemTokenFactoryAndAddress.json exists");
+                data = JSON.parse(data);
+                let abi = data.abi;
+                let address = data.address;
+                // if contract is deployed then return 
+                if (web3.eth.getCode(address).length > 4) {
+                    console.log("EnergySystemTokenFactory is deployed.")
+                    console.log(web3.eth.getCode(address))
+                    let contract = web3.eth.contract(abi);
+                    let instance = contract.at(address);
+                    // todo: auf richtiger blockchain muss der Parameter fromBlock angepasst werden, ansonsten dauert die Suche zu lange. 
+                    instance.EnergySystemTokenCreationEvent({ _from: userAddress }, { fromBlock: 0, toBlock: 'latest' }).get((error, events) => {
+                        if (error) {
+                            console.log('Error in EnergySystemTokenCreationEvent event handler: ' + error);
+                        } else {
+                            console.log('EnergySystemTokenCreationEvent: ' + JSON.stringify(events));
+                            resolve(events);
+                        }
+                    });
+                }
+            }
+        });
+    })
+}
+
+module.exports.getLastEnergySystemTokenAddressForUser = (request, response) => {
+    getEnergySystemTokens(request, response).then((events) => {
+        // returns {txhash, from, contract, blocknumber}
+        let transactionHash = events[0].transactionHash;
+        let blockNumber = events[0].blockNumber;
+        let _contract = events[0].args._contract;
+        let _from = events[0].args._from;
+
+        response.json({ _from, _contract, blockNumber, transactionHash });
+    })
+}
+
+module.exports.getAllEnergySystemTokenAddressesForUser = (request, response) => {
+    getEnergySystemTokens(request, response).then((events) => {
+        let output = [];
+        for (let i in events) {
+            output.push({
+                transactionHash: events[i].transactionHash,
+                blockNumber: events[i].blockNumber,
+                contract: events[i].args._contract,
+                from: events[i].args._from,
+            })
+        }
+        response.json(output);
+    })
 }

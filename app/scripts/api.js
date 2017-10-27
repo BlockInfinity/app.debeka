@@ -61,9 +61,19 @@ window.createEnergySystemToken = function(_anzahlTokens, _name, _beschreibung) {
 }
 
 
-// retrieves all EnergySystemTokenCreationEvents for logged in user.  
-window.getEnergySystemTokenCreationEvents = function(_user = web3.eth.defaultAccount) {
-    return fetch(`./EnergySystemTokens?userAddress=${web3.eth.defaultAccount}`).then(response => {
+// // retrieves all EnergySystemTokenCreationEvents for logged in user.  
+// window.getEnergySystemTokenCreationEvents = function(_user = web3.eth.defaultAccount) {
+//     return fetch(`./EnergySystemTokens?userAddress=${web3.eth.defaultAccount}`).then(response => {
+//         return response.json();
+//     }).then(res => {
+//         return res;
+//     });
+// }
+
+
+// gibt die adresse des zuletzt erstellten energysystemtoken contracts wieder 
+window.getLastEnergySystemTokenAddressForUser = function(_user = web3.eth.defaultAccount) {
+    return fetch(`./LastEnergySystemTokenAddressForUser?userAddress=${web3.eth.defaultAccount}`).then(response => {
         return response.json();
     }).then(res => {
         return res;
@@ -71,15 +81,13 @@ window.getEnergySystemTokenCreationEvents = function(_user = web3.eth.defaultAcc
 }
 
 
-// gibt die adresse des zuletzt erstellten energysystemtoken contracts wieder 
-window.getLastEnergySystemTokenAddressForUser = function(_user = web3.eth.defaultAccount) {
-
-}
-
-
 // gibt alle energy system token addresses für einen nutzer zurück 
 window.getAllEnergySystemTokenAddressesForUser = function(_user = web3.eth.defaultAccount) {
-
+    return fetch(`./AllEnergySystemTokenAddressesForUser?userAddress=${web3.eth.defaultAccount}`).then(response => {
+        return response.json();
+    }).then(res => {
+        return res;
+    });
 }
 
 
