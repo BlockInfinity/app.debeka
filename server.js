@@ -9,11 +9,14 @@ const app = express();
 app.use('/', express.static('public'))
 
 
-app.use('/test', express.static(path.join(__dirname, 'app', 'mochaTests')))
+if (process.env.PRODUCTION != "PRODUCTION") {
 
-app.use('/node_modules/mocha', express.static(path.join(__dirname, 'node_modules', 'mocha')))
+    app.use('/test', express.static(path.join(__dirname, 'app', 'mochaTests')))
 
-app.use('/node_modules/chai', express.static(path.join(__dirname, 'node_modules', 'chai')))
+    app.use('/node_modules/mocha', express.static(path.join(__dirname, 'node_modules', 'mocha')))
+
+    app.use('/node_modules/chai', express.static(path.join(__dirname, 'node_modules', 'chai')))
+}
 
 
 app.get('/EnergySystemTokenFactory', (req, res) => {
