@@ -96,8 +96,19 @@ module.exports.getAllEnergySystemTokenAddresses = function() {
 }
 
 
-module.exports.getTokenBalance = function(_energySystemTokenAddress, _user = web3.eth.defaultAccount) {
+module.exports.getEnergySystemTokenBalance = function(_energySystemTokenAddress, _user = web3.eth.defaultAccount) {
 
+    return getEnergySystemToken(_energySystemTokenAddress).then(estoken => {
+        console.log("in api.js getEnergySystemTokenBalance", estoken)
+        console.log("_user", _user)
+        window.estoken = estoken;
+        return new Promise((resolve, reject) => {
+            estoken.balanceOf(_user, { from: _user }, function(error, result) {
+                if (error) throw error;
+                resolve(result.toNumber());
+            });
+        })
+    })
 }
 
 
@@ -164,3 +175,20 @@ module.exports.disburse = function(_energySystemTokenAddress) {
 
 // merges properties of both objects, so that i can access the functions in browser via window. 
 Object.assign(window, module.exports)
+
+
+// helper function 
+function getEnergySystemToken(_energySystemTokenAddress, _user = web3.eth.defaultAccount) {
+    return new Promise((resolve, reject) => {
+        return fetch('/EnergySystemTokenAbi').then(response => {
+            return response.json().then(function(data) {
+                console.log("/EnergySystemTokenAbi reponse abi", data.abi)
+                let abi = data.abi;
+                let contract = web3.eth.contract(abi);
+                console.log("after web3.eth.contract")
+                let estoken = contract.at(_energySystemTokenAddress);
+                resolve(estoken);
+            })
+        })
+    })
+}

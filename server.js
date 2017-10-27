@@ -23,7 +23,9 @@ app.get('/EnergySystemTokenFactory', (req, res) => {
     blockchain.getEnergySystemTokenFactory(req, res);
 })
 
-
+app.get('/EnergySystemTokenAbi', (req, res) => {
+    blockchain.getEnergySystemTokenAbi(req, res);
+})
 
 app.get('/transactionReceipt', (req, res) => {
     blockchain.getTransactionReceipt(req, res);
@@ -40,8 +42,6 @@ app.get('/AllEnergySystemTokenAddressesForUser', (req, res) => {
 app.get('/AllEnergySystemTokenAddresses', (req, res) => {
     blockchain.getAllEnergySystemTokenAddresses(req, res);
 })
-
-
 
 app.listen(8000, function() {
     console.log('Example app listening on port 8000!');

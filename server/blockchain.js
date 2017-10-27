@@ -45,23 +45,18 @@ function connect(bcUrl = 'http://localhost:8545') {
 module.exports.getEnergySystemTokenFactory = (req, response) => {
     try {
         fs.readFile(pathContractData, (err, data) => {
-            console.log("fs.readFile(pathContractData)", err);
             // file exists 
             if (!err) {
-                console.log("EnergySystemTokenFactoryAndAddress.json exists");
                 data = JSON.parse(data);
                 let abi = data.abi;
                 let address = data.address;
                 // if contract is deployed then return 
                 if (web3.eth.getCode(address).length > 4) {
-                    console.log("EnergySystemTokenFactory is deployed.")
-                    console.log(web3.eth.getCode(address))
                     let contract = web3.eth.contract(abi);
                     let instance = contract.at(address);
 
                     // debug purposes 
                     instance.EnergySystemTokenCreationEvent((error, event) => {
-                        console.log("EnergySystemTokenCreationEvent received");
                         console.log(event);
                     })
 
@@ -85,7 +80,6 @@ module.exports.getEnergySystemTokenFactory = (req, response) => {
                         fs.readFile(pathEnergySystemToken, 'utf8', (err, dataEstoken) => {
                             if (err) throw err;
                             fs.readFile(pathEnergySystemTokenFactory, 'utf8', (err, dataFactory) => {
-                                console.log("file does not exist || contract is not deployed || or sth. else")
                                 if (err) throw err;
                                 // compile and extract data for contract creation
                                 let input = {
@@ -116,11 +110,9 @@ module.exports.getEnergySystemTokenFactory = (req, response) => {
                                         // debug purposes 
                                         instance.EnergySystemTokenCreationEvent((error, event) => {
                                             console.log("EnergySystemTokenCreationEvent received");
-                                            console.log(event);
                                         })
 
                                         let address = instance.address
-                                        console.log("writing file", abi, address)
                                         fs.writeFile('./server/contractData/EnergySystemTokenFactoryAndAddress.json', JSON.stringify({ abi, address }), (err) => {
                                             if (err) throw err;
                                             console.log('The file has been saved!');
@@ -147,35 +139,6 @@ module.exports.getTransactionReceipt = (request, response) => {
     response.json({ transactionReceipt: receipt })
 }
 
-function getESTokenCreationEvents(filter) {
-    return new Promise((resolve, reject) => {
-        fs.readFile(pathContractData, (err, data) => {
-            // file exists 
-            if (!err) {
-                console.log("EnergySystemTokenFactoryAndAddress.json exists");
-                data = JSON.parse(data);
-                let abi = data.abi;
-                let address = data.address;
-                // if contract is deployed then return 
-                if (web3.eth.getCode(address).length > 4) {
-                    console.log("EnergySystemTokenFactory is deployed.")
-                    console.log(web3.eth.getCode(address))
-                    let contract = web3.eth.contract(abi);
-                    let instance = contract.at(address);
-                    // todo: auf richtiger blockchain muss der Parameter fromBlock angepasst werden, ansonsten dauert die Suche zu lange. 
-                    instance.EnergySystemTokenCreationEvent(filter, { fromBlock: 0, toBlock: 'latest' }).get((error, events) => {
-                        if (error) {
-                            console.log('Error in EnergySystemTokenCreationEvent event handler: ' + error);
-                        } else {
-                            console.log('EnergySystemTokenCreationEvent: ' + JSON.stringify(events));
-                            resolve(events);
-                        }
-                    });
-                }
-            }
-        });
-    })
-}
 
 module.exports.getLastEnergySystemTokenAddressForUser = (request, response) => {
 
@@ -239,5 +202,71 @@ module.exports.getAllEnergySystemTokenAddresses = (request, response) => {
         }
         console.log("output from getAllEnergySystemTokenAddresses: ", output)
         response.json(output);
+    })
+}
+
+module.exports.getEnergySystemTokenAbi = (request, response) => {
+    try {
+        // file does not exist || contract is not deployed || or sth. else
+        fs.readFile(pathToken, 'utf8', (err, dataToken) => {
+            if (err) throw err;
+            fs.readFile(pathStandardToken, 'utf8', (err, dataStandardToken) => {
+                if (err) throw err;
+                fs.readFile(pathHumanStandardToken, 'utf8', (err, dataHumanStandardToken) => {
+                    if (err) throw err;
+                    fs.readFile(pathEnergySystemToken, 'utf8', (err, dataEstoken) => {
+                        if (err) throw err;
+
+                        console.log("############ getEnergySystemTokenAbi")
+
+                        // compile and extract data for contract creation
+                        let input = {
+                            'EnergySystemToken.sol': dataEstoken,
+                            'HumanStandardToken.sol': dataHumanStandardToken,
+                            'StandardToken.sol': dataStandardToken,
+                            'Token.sol': dataToken
+                        }
+                        let output = solc.compile({ sources: input }, 1);
+                        let abi = JSON.parse(output.contracts['EnergySystemToken.sol:EnergySystemToken'].interface);
+                        console.log("############ abi", abi)
+                        response.json({ abi })
+                    });
+                });
+            });
+        });
+    } catch (err) {
+        response.status(500).send(`Error when trying to retrieve EnergySystemTokenFactory: ${err}`)
+    }
+}
+
+// helper function 
+
+function getESTokenCreationEvents(filter) {
+    return new Promise((resolve, reject) => {
+        fs.readFile(pathContractData, (err, data) => {
+            // file exists 
+            if (!err) {
+                console.log("EnergySystemTokenFactoryAndAddress.json exists");
+                data = JSON.parse(data);
+                let abi = data.abi;
+                let address = data.address;
+                // if contract is deployed then return 
+                if (web3.eth.getCode(address).length > 4) {
+                    console.log("EnergySystemTokenFactory is deployed.")
+                    console.log(web3.eth.getCode(address))
+                    let contract = web3.eth.contract(abi);
+                    let instance = contract.at(address);
+                    // todo: auf richtiger blockchain muss der Parameter fromBlock angepasst werden, ansonsten dauert die Suche zu lange. 
+                    instance.EnergySystemTokenCreationEvent(filter, { fromBlock: 0, toBlock: 'latest' }).get((error, events) => {
+                        if (error) {
+                            console.log('Error in EnergySystemTokenCreationEvent event handler: ' + error);
+                        } else {
+                            console.log('EnergySystemTokenCreationEvent: ' + JSON.stringify(events));
+                            resolve(events);
+                        }
+                    });
+                }
+            }
+        });
     })
 }

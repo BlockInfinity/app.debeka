@@ -19,13 +19,17 @@ describe('api.js', function() {
         });
     });
 
+    let estoken;
+
     it('getLastEnergySystemTokenAddressForUser', function(done) {
         this.timeout(30000)
         api.getLastEnergySystemTokenAddressForUser().then(res => {
             assert(res.from == web3.eth.defaultAccount);
+            estoken = res.contract;
             done();
         });
     });
+
 
     it('getAllEnergySystemTokenAddressesForUser', function(done) {
         this.timeout(30000)
@@ -59,6 +63,16 @@ describe('api.js', function() {
         let defaultaccount = api.getDefaultAccount();
         assert(defaultaccount == web3.eth.accounts[0]);
         done()
+    });
+
+
+    it('getEnergySystemTokenBalance', function(done) {
+        this.timeout(10000)
+        api.getEnergySystemTokenBalance(estoken).then(balance => {
+        	console.log("balance", balance);
+            assert(balance == 100, `${balance} == 100`)
+            done()
+        })
     });
 
 
