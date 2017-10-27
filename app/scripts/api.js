@@ -13,18 +13,21 @@ window.isAccountLoaded = function(_address) {
     }
 }
 
-window.getAccount = function() {
+
+// gets default account that is used by metamask 
+window.getDefaultAccount = function() {
     return web3.eth.defaultAccount;
 }
 
+
 // gibt Account Stand zurück
-window.accountStatus = function(_address) {
-    return web3.eth.getBalance(_address);
+window.getEtherBalance = function(_user = web3.eth.defaultAccount) {
+    return web3.eth.getBalance(_user);
 }
 
-// initiales anlegen eines energysystemtoken contracts. 
-// Jener contract wird über eine contract factory erstellt. Auf server seite wird sicher gestellt, dass jene factory deployed ist. 
-window.createEnergySystem = function(_anzahlTokens, _name, _beschreibung) {
+
+// initiales anlegen eines energysystemtoken contracts. Jener contract wird über eine contract factory erstellt. Auf server seite wird sicher gestellt, dass jene factory deployed ist. 
+window.createEnergySystemToken = function(_anzahlTokens, _name, _beschreibung) {
 
     return fetch('./EnergySystemTokenFactory').then(response => {
         console.log("got reponse");
@@ -57,8 +60,9 @@ window.createEnergySystem = function(_anzahlTokens, _name, _beschreibung) {
     })
 }
 
-// retrieves all EnergySystemTokenCreationEvents for logged in user. Important for getting the estoken contract addresses for the user. 
-window.getEnergySystemTokens = function() {
+
+// retrieves all EnergySystemTokenCreationEvents for logged in user.  
+window.getEnergySystemTokenCreationEvents = function(_user = web3.eth.defaultAccount) {
     return fetch(`./EnergySystemTokens?userAddress=${web3.eth.defaultAccount}`).then(response => {
         return response.json();
     }).then(res => {
@@ -66,22 +70,87 @@ window.getEnergySystemTokens = function() {
     });
 }
 
-// // verkaufen von shares
-// function sellEnergySystemShares(_address, _anzahlTokens, _price) {
 
-// }
+// gibt die adresse des zuletzt erstellten energysystemtoken contracts wieder 
+window.getLastEnergySystemTokenAddressForUser = function(_user = web3.eth.defaultAccount) {
 
-// // list of anzahlToken/price pairs
-// function getSellEnergySystemShares(_address) {
+}
 
-// }
 
-// function buyEnergySystemShares(_address, _anzahlTokens, _price) {
+// gibt alle energy system token addresses für einen nutzer zurück 
+window.getAllEnergySystemTokenAddressesForUser = function(_user = web3.eth.defaultAccount) {
 
-// }
+}
 
-// // list of anzahlToken/price pairs
-// function getBuyEnergySystemShares(_address) {
 
-// }
+// gibt alle energy system token adressen zurück
+window.getAllEnergySystemTokenAddresses = function() {
 
+}
+
+
+window.getTokenBalance = function(_energySystemTokenAddress, _user = web3.eth.defaultAccount) {
+
+}
+
+
+window.getTotalNumberOfTokens = function(_energySystemTokenAddress) {
+
+}
+
+// returns {price, orders[]} for a specific _energySystemTokenAddress
+window.getFulfilledOrders = function(_energySystemTokenAddress) {
+
+}
+
+
+window.getRaisedEther = function(_energySystemTokenAddress) {
+
+}
+
+
+// Kauf von tokens während der funding phase 
+window.buyEnergySystemTokens = function(_energySystemTokenAddress, _value) {
+    // - sol function buyEnergySystemTokens()  
+}
+
+
+// Zurücktauschen von tokens gegen ether während der funding phase 
+window.getMoneyBack = function(_energySystemTokenAddress) {
+    // - sol function getMoneyBack() 
+}
+
+
+window.getTimeLeftForFundingPhase = function(_energySystemTokenAddress) {
+
+}
+
+
+// erträge im energysystemtoken contract ausbezahlen lassen 
+window.withdraw = function(_energySystemTokenAddress) {
+
+}
+
+
+//  function for future trading enhancement
+window.transferEther = function(_to, _value) {
+
+}
+
+
+//  function for future trading enhancement
+window.transferEnergySystemShares = function(_to, _value) {
+
+}
+
+
+//  function for future trading enhancement
+window.transferFromEnergySystemShares = function(_from, _to, _value) {
+
+}
+
+
+// ruft die enbw oder der besitzer auf um erträge an die shareholder auszuzahlen  
+window.disburse = function(_energySystemTokenAddress) {
+
+}
