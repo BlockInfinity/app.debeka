@@ -5,7 +5,8 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var config = {
 
     entry: {
-        bundle: './app/index'
+        bundle: './app/index',
+        apiTest: "./app/mochaTests/apiTest.test.js",
     },
     output: {
         path: path.join(__dirname, '/public/'),
@@ -17,7 +18,7 @@ var config = {
     //     path: path.join(__dirname, '/public/'),
     //     filename: 'bundle.js'
     // },
-    
+
     watchOptions: {
         poll: true,
         ignored: './server/contractData/'
@@ -33,18 +34,21 @@ var config = {
             'window.$': 'jquery'
 
         }),
-        new webpack.optimize.CommonsChunkPlugin('vendor', 'vendor.js', Infinity),
+        // new webpack.optimize.CommonsChunkPlugin('vendor', 'vendor.js', Infinity),
         new webpack.DefinePlugin({
             "require.specified": "require.resolve"
         })
     ],
     module: {
         noParse: [],
-        loaders: [{
+        loaders: [
+            {
                 test: /\.js$/,
                 loaders: ['react-hot', 'babel'],
-                include: path.join(__dirname, 'app')
+                include: path.join(__dirname, 'app'),
+                exclude: path.resolve(__dirname, 'app', 'mochaTests/apiTest.js')
             },
+
             {
                 test: /\.css$/,
                 loader: ExtractTextPlugin.extract('style-loader', 'css-loader')
