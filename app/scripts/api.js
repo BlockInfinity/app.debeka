@@ -93,7 +93,11 @@ window.getAllEnergySystemTokenAddressesForUser = function(_user = web3.eth.defau
 
 // gibt alle energy system token adressen zurück
 window.getAllEnergySystemTokenAddresses = function() {
-
+    return fetch(`./AllEnergySystemTokenAddresses`).then(response => {
+        return response.json();
+    }).then(res => {
+        return res;
+    });
 }
 
 

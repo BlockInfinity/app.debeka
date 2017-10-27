@@ -4,17 +4,23 @@ const express = require('express');
 const app = express();
 
 
-// app.use('/abi', express.static(path.join(__dirname, 'bc.ico.contractdeployer', 'truffle', 'build', 'contracts')));
+
 
 app.use('/', express.static('public'))
+
+
+app.use('/test', express.static(path.join(__dirname, 'app', 'mochaTests')))
+
+app.use('/node_modules/mocha', express.static(path.join(__dirname, 'node_modules', 'mocha')))
+
+app.use('/node_modules/chai', express.static(path.join(__dirname, 'node_modules', 'chai')))
+
 
 app.get('/EnergySystemTokenFactory', (req, res) => {
     blockchain.getEnergySystemTokenFactory(req, res);
 })
 
-// app.get('/EnergySystemTokens', (req, res) => {
-//     blockchain.getEnergySystemTokens(req, res);
-// })
+
 
 app.get('/transactionReceipt', (req, res) => {
     blockchain.getTransactionReceipt(req, res);
@@ -28,10 +34,11 @@ app.get('/AllEnergySystemTokenAddressesForUser', (req, res) => {
     blockchain.getAllEnergySystemTokenAddressesForUser(req, res);
 })
 
-
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "index.html"));
+app.get('/AllEnergySystemTokenAddresses', (req, res) => {
+    blockchain.getAllEnergySystemTokenAddresses(req, res);
 })
+
+
 
 app.listen(8000, function() {
     console.log('Example app listening on port 8000!');

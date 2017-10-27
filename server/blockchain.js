@@ -29,9 +29,7 @@ if (!process.env.nodeUrl) {
     throw new Error("process.env.nodeUrl not set")
 }
 
-
 let web3 = connect();
-
 
 function connect(bcUrl = 'http://localhost:8545') {
     let web3 = new Web3(new Web3.providers.HttpProvider(process.env.nodeUrl));
@@ -141,7 +139,6 @@ module.exports.getEnergySystemTokenFactory = (req, response) => {
     }
 }
 
-
 module.exports.getTransactionReceipt = (request, response) => {
     let txhash = request.query.transactionHash;
     console.log(request.query);
@@ -150,16 +147,8 @@ module.exports.getTransactionReceipt = (request, response) => {
     response.json({ transactionReceipt: receipt })
 }
 
-
-function getEnergySystemTokens(request, response) {
+function getESTokenCreationEvents(filter) {
     return new Promise((resolve, reject) => {
-        let userAddress;
-        if (request.query.userAddress) {
-            userAddress = request.query.userAddress;
-        } else {
-            response.send("UserAddress as query parameter is missing.");
-            return;
-        }
         fs.readFile(pathContractData, (err, data) => {
             // file exists 
             if (!err) {
@@ -174,7 +163,7 @@ function getEnergySystemTokens(request, response) {
                     let contract = web3.eth.contract(abi);
                     let instance = contract.at(address);
                     // todo: auf richtiger blockchain muss der Parameter fromBlock angepasst werden, ansonsten dauert die Suche zu lange. 
-                    instance.EnergySystemTokenCreationEvent({ _from: userAddress }, { fromBlock: 0, toBlock: 'latest' }).get((error, events) => {
+                    instance.EnergySystemTokenCreationEvent(filter, { fromBlock: 0, toBlock: 'latest' }).get((error, events) => {
                         if (error) {
                             console.log('Error in EnergySystemTokenCreationEvent event handler: ' + error);
                         } else {
@@ -189,7 +178,18 @@ function getEnergySystemTokens(request, response) {
 }
 
 module.exports.getLastEnergySystemTokenAddressForUser = (request, response) => {
-    getEnergySystemTokens(request, response).then((events) => {
+
+    let userAddress;
+    if (request.query.userAddress) {
+        userAddress = request.query.userAddress;
+    } else {
+        response.send("UserAddress as query parameter is missing.");
+        return;
+    }
+
+    let filter = { _from: userAddress }
+
+    getESTokenCreationEvents(filter).then((events) => {
         // returns {txhash, from, contract, blocknumber}
         let transactionHash = events[0].transactionHash;
         let blockNumber = events[0].blockNumber;
@@ -201,7 +201,18 @@ module.exports.getLastEnergySystemTokenAddressForUser = (request, response) => {
 }
 
 module.exports.getAllEnergySystemTokenAddressesForUser = (request, response) => {
-    getEnergySystemTokens(request, response).then((events) => {
+
+    let userAddress;
+    if (request.query.userAddress) {
+        userAddress = request.query.userAddress;
+    } else {
+        response.send("UserAddress as query parameter is missing.");
+        return;
+    }
+
+    let filter = { _from: userAddress }
+
+    getESTokenCreationEvents(filter).then((events) => {
         let output = [];
         for (let i in events) {
             output.push({
@@ -211,6 +222,22 @@ module.exports.getAllEnergySystemTokenAddressesForUser = (request, response) => 
                 from: events[i].args._from,
             })
         }
+        response.json(output);
+    })
+}
+
+module.exports.getAllEnergySystemTokenAddresses = (request, response) => {
+    getESTokenCreationEvents({}).then((events) => {
+        let output = [];
+        for (let i in events) {
+            output.push({
+                transactionHash: events[i].transactionHash,
+                blockNumber: events[i].blockNumber,
+                contract: events[i].args._contract,
+                from: events[i].args._from,
+            })
+        }
+        console.log("output from getAllEnergySystemTokenAddresses: ", output)
         response.json(output);
     })
 }

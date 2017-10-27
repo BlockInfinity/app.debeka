@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Tests</title>
+    <link rel="stylesheet" href="/node_modules/mocha/mocha.css">
+</head>
+
+<body>
+    <!-- Mocha setup and initiation code -->
+    <h1> Browser Mocha Tests </h1>
+    <div id="mocha"></div>
+    <script src="/node_modules/mocha/mocha.js"></script>
+    <script src="/node_modules/chai/chai.js"></script>
+    <script>
+    mocha.setup('bdd')
+    </script>
+    <script src="apiTest.js" type="text/javascript"></script>
+    <script>
+    window.onload = function() {
+
+        mocha.run();
+    };
+    </script>
+</body>
+
+</html>

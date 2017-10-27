@@ -3,16 +3,26 @@ var webpack = require('webpack');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 var config = {
-    entry: './app/index',
+
+    entry: {
+        bundle: './app/index'
+    },
+    output: {
+        path: path.join(__dirname, '/public/'),
+        filename: "[name].js"
+    },
+
+    // entry: './app/index',
+    // output: {
+    //     path: path.join(__dirname, '/public/'),
+    //     filename: 'bundle.js'
+    // },
+    
     watchOptions: {
         poll: true,
         ignored: './server/contractData/'
     },
     devtool: 'eval',
-    output: {
-        path: path.join(__dirname, '/public/'),
-        filename: 'bundle.js'
-    },
     plugins: [
         new ExtractTextPlugin("styles.css"),
         new webpack.HotModuleReplacementPlugin(),
