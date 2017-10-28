@@ -83,6 +83,16 @@ describe('api.js', function() {
     });
 
 
+    it('isAuthenticated', function(done) {
+        this.timeout(10000)
+        api.isAuthenticated().then(res => {
+            console.log(res);
+            done()
+        })
+    });
+
+
+
 
 
 });

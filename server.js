@@ -1,9 +1,18 @@
 const path = require("path");
 const blockchain = require('./server/blockchain.js');
+const authentification = require('./server/authentification.js');
 const express = require('express');
 const app = express();
 
 
+
+
+app.use('/user/', function(req, res, next) {
+    if (authentification.isAuthenticated(req, res))
+        next();
+    else
+        res.status(401).send("Authentication Required. Please use metamask.")
+});
 
 
 app.use('/', express.static('public'))
@@ -25,6 +34,13 @@ app.get('/EnergySystemTokenFactory', (req, res) => {
 
 app.get('/EnergySystemTokenAbi', (req, res) => {
     blockchain.getEnergySystemTokenAbi(req, res);
+})
+
+app.get('/Authenticated', (req, res) => {
+    if (authentification.isAuthenticated(req, res))
+        res.send("Authentification succeeded!")
+    else
+        res.status(401).send("Authentication Required. Please use metamask.")
 })
 
 app.get('/transactionReceipt', (req, res) => {
