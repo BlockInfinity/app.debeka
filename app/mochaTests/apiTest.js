@@ -13,7 +13,14 @@ describe('api.js', function() {
 
     it('createEnergySystemToken', function(done) {
         this.timeout(30000)
-        api.createEnergySystemToken().then(res => {
+
+        let _initialAmount = 100
+        let _decimalUnits = 100
+        let _fundingGoal = web3.toWei(100)
+        let _fundingPeriod = 100
+        let _price = 100
+
+        api.createEnergySystemToken(_initialAmount, _decimalUnits, _fundingGoal, _fundingPeriod, _price).then(res => {
             assert(res);
             done();
         });
@@ -69,7 +76,7 @@ describe('api.js', function() {
     it('getEnergySystemTokenBalance', function(done) {
         this.timeout(10000)
         api.getEnergySystemTokenBalance(estoken).then(balance => {
-        	console.log("balance", balance);
+            console.log("balance", balance);
             assert(balance == 100, `${balance} == 100`)
             done()
         })

@@ -34,7 +34,7 @@ module.exports.getEtherBalance = function(_user = web3.eth.defaultAccount) {
 
 
 // initiales anlegen eines energysystemtoken contracts. Jener contract wird über eine contract factory erstellt. Auf server seite wird sicher gestellt, dass jene factory deployed ist. 
-module.exports.createEnergySystemToken = function(_anzahlTokens, _name, _beschreibung) {
+module.exports.createEnergySystemToken = function(_initialAmount, _decimalUnits, _fundingGoal, _fundingPeriod, _price) {
 
     return fetch('/EnergySystemTokenFactory').then(response => {
         console.log("got reponse");
@@ -48,7 +48,7 @@ module.exports.createEnergySystemToken = function(_anzahlTokens, _name, _beschre
             let contract = web3.eth.contract(abi);
             let factory = contract.at(address);
             return new Promise((resolve, reject) => {
-                factory.createEnergySystemToken((error, txhash) => {
+                factory.createEnergySystemToken(_initialAmount, _decimalUnits, _fundingGoal, _fundingPeriod, _price, (error, txhash) => {
                     if (error) {
                         reject(error);
                     }
