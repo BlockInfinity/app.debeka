@@ -126,14 +126,7 @@ function getSignatureParameterString() {
     }); 
 }
 
-
-function fetchWithAuth(_ressource) {
-    return getSignatureParameterString().then(res => {
-        return fetch(`${_ressource}?${res}`);
-    })
-}
-
-
+// test function for fetchWithAuth helper function 
 module.exports.isAuthenticated = function() {
     return fetchWithAuth("/Authenticated").then(response => {
         return response.text();
@@ -222,5 +215,12 @@ function getEnergySystemToken(_energySystemTokenAddress, _user = web3.eth.defaul
                 resolve(estoken);
             })
         })
+    })
+}
+
+// use this instead of fetch when retrieving /use/ ressources
+function fetchWithAuth(_ressource) {
+    return getSignatureParameterString().then(res => {
+        return fetch(`${_ressource}?${res}`);
     })
 }
