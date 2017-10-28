@@ -3,21 +3,18 @@ const blockchain = require('./server/blockchain.js');
 const express = require('express');
 const app = express();
 
-
-
-
 app.use('/', express.static('public'))
 
-
 if (process.env.PRODUCTION != "PRODUCTION") {
-
     app.use('/test', express.static(path.join(__dirname, 'app', 'mochaTests')))
-
     app.use('/node_modules/mocha', express.static(path.join(__dirname, 'node_modules', 'mocha')))
-
     app.use('/node_modules/chai', express.static(path.join(__dirname, 'node_modules', 'chai')))
 }
 
+app.use(function (req, res, next) {
+  console.log('Time:', Date.now())
+  next()
+})
 
 app.get('/EnergySystemTokenFactory', (req, res) => {
     blockchain.getEnergySystemTokenFactory(req, res);
