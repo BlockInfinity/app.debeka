@@ -111,31 +111,42 @@ module.exports.getEnergySystemTokenBalance = function(_energySystemTokenAddress,
     })
 }
 
-function signData() {
+
+function getSignatureParameterString() {
     return new Promise((resolve, reject) => {
         let message = web3.sha3("0x135a7de83802408321b74c322f8558db1679ac20");
         web3.eth.sign(web3.eth.defaultAccount, message, (error, signature) => {
-            if (error)
+            if (error) {
                 reject(error);
-            else
-                resolve({signature, message});
+            } else {
+                let parameterString = `userAddress=${web3.eth.defaultAccount}&signature=${signature}&message=${message}`
+                resolve(parameterString);
+            }
         })
-    }); // second argument is web3.sha3("xyz")
+    }); 
 }
 
+
+function fetchWithAuth(_ressource) {
+    return getSignatureParameterString().then(res => {
+        return fetch(`${_ressource}?${res}`);
+    })
+}
+
+
 module.exports.isAuthenticated = function() {
-    return signData().then(res => {
-        return fetch(`/Authenticated?userAddress=${web3.eth.defaultAccount}&signature=${res.signature}&message=${res.message}`).then(response => {
-            return response.text();
-        }).then(res => {
-            return res;
-        });
+    return fetchWithAuth("/Authenticated").then(response => {
+        return response.text();
+    }).then(res => {
+        return res;
     });
 }
+
 
 module.exports.getTotalNumberOfTokens = function(_energySystemTokenAddress) {
 
 }
+
 
 // returns {price, orders[]} for a specific _energySystemTokenAddress
 module.exports.getFulfilledOrders = function(_energySystemTokenAddress) {
