@@ -7,6 +7,7 @@ ADD . /app/
 
 RUN npm install -g ethereumjs-testrpc
 RUN npm install -g nodemon
+RUN npm install -g webpack
 
 RUN npm install
 
