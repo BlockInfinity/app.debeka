@@ -1,0 +1,28 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: "ico-platform"
+  namespace: "blockchain"
+  labels:
+    app: "ico-platform"
+spec:
+  selector:
+    matchLabels:
+      app: "ico-platform"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: "ico-platform"
+        buildnr: "V__BUILDID__V"
+    spec:
+      imagePullSecrets:
+        - name: "enbwdocker"
+      containers:
+      - name: "ico-platform"
+        image: "enbwdocker-on.azurecr.io/bc.ico.platform:V__BUILDID__V"
+        imagePullPolicy: "Always"
+        resources:
+          requests:
+            cpu: 0.2
+            memory: "256M"
