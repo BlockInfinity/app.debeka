@@ -25,7 +25,6 @@ function onConnect(){
 }
 
 
-
 ReactDOM.render(
 <Router history={hashHistory} >{routes}</Router>,
     document.getElementById('root')

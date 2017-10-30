@@ -123,7 +123,7 @@ function getSignatureParameterString() {
                 resolve(parameterString);
             }
         })
-    }); 
+    });
 }
 
 // test function for fetchWithAuth helper function 
@@ -224,3 +224,4 @@ function fetchWithAuth(_ressource) {
         return fetch(`${_ressource}?${res}`);
     })
 }
+

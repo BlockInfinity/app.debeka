@@ -39,7 +39,7 @@ module.exports = class Blockchain {
 
     // helper functions  
     connect(bcUrl = 'http://localhost:8545') {
-         this.web3 = new Web3(new Web3.providers.HttpProvider(process.env.nodeUrl));
+        this.web3 = new Web3(new Web3.providers.HttpProvider(process.env.nodeUrl));
         if (this.web3 && !this.web3.isConnected()) {
             throw new Error("web3 is not connected. Please execute connect function if not already done. ")
         } else {
@@ -47,13 +47,6 @@ module.exports = class Blockchain {
             console.log(`Connected to Node at ${process.env.nodeUrl}`)
         }
         return this.web3;
-    }
-
-    listenToEvent(_contract, _eventName, _namesOfReturnValues) {
-        _contract[_eventName]((error, event) => {
-            console.log("in listenToEvent ", event);
-            socket.emit(`Emit ${_eventName} with ${_namesOfReturnValues} = ${_namesOfReturnValues}`);
-        })
     }
 
     getESTokenCreationEvents(filter) {
@@ -86,6 +79,13 @@ module.exports = class Blockchain {
         })
     }
 
+    listenToEvent(_contract, _eventName, _namesOfReturnValues) {
+        _contract[_eventName]((error, event) => {
+            console.log("in listenToEvent ", event);
+            this.io.emit(_eventName, `${JSON.stringify(event.args)}`);
+        })
+    }
+
     // externally used functions 
     getEnergySystemTokenFactory(req, response) {
         try {
@@ -101,9 +101,7 @@ module.exports = class Blockchain {
                         let instance = contract.at(address);
 
                         // debug purposes 
-                        instance.EnergySystemTokenCreationEvent((error, event) => {
-                            console.log(event);
-                        })
+                        this.listenToEvent(instance, "EnergySystemTokenCreationEvent", ["_contract", "_from", "totalSupply"])
 
                         response.json({ abi, address });
                         return;
@@ -153,10 +151,8 @@ module.exports = class Blockchain {
                                             console.log('Contract address: ' + instance.address);
 
                                             // debug purposes 
-                                            instance.EnergySystemTokenCreationEvent((error, event) => {
-                                                console.log("EnergySystemTokenCreationEvent received");
-                                            })
-
+                                            this.listenToEvent(instance, "EnergySystemTokenCreationEvent", ["_contract", "_from", "totalSupply"])
+ 
                                             let address = instance.address
                                             fs.writeFile('./server/contractData/EnergySystemTokenFactoryAndAddress.json', JSON.stringify({ abi, address }), (err) => {
                                                 if (err) throw err;

@@ -1,13 +1,23 @@
 let assert = chai.assert;
 let api = require('../scripts/api.js')
+let io = require('socket.io-client');
+
+const socket = io(window.location.host);
+
+
+
 
 describe('api.js', function() {
 
+    let socketPromise;
 
     before((done) => {
         while (!api.isAccountLoaded()) {
             setTimeout(() => {}, 3000);
         }
+        socketPromise = new Promise((resolve, reject) => socket.on('EnergySystemTokenCreationEvent', (data) => {
+            resolve(data);
+        }))
         done();
     });
 
@@ -25,6 +35,14 @@ describe('api.js', function() {
             done();
         });
     });
+
+    it('EnergySystemTokenCreationEvent', (done) => {
+        socketPromise.then(data => {
+            console.log(`Client Side: Received EnergySystemTokenCreationEvent with data ${data}`)
+            done();
+        })
+    })
+
 
     let estoken;
 
@@ -90,9 +108,5 @@ describe('api.js', function() {
             done()
         })
     });
-
-
-
-
 
 });
