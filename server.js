@@ -27,10 +27,6 @@ if (process.env.PRODUCTION != "PRODUCTION") {
     app.use('/node_modules/chai', express.static(path.join(__dirname, 'node_modules', 'chai')))
 }
 
-app.use(function (req, res, next) {
-  console.log('Time:', Date.now())
-  next()
-})
 
 app.get('/EnergySystemTokenFactory', (req, res) => {
     blockchainApi.getEnergySystemTokenFactory(req, res);
