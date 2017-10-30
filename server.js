@@ -1,8 +1,12 @@
 const path = require("path");
-const blockchain = require('./server/blockchain.js');
-const authentification = require('./server/authentification.js');
 const express = require('express');
 const app = express();
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
+
+const BlockchainApi = require('./server/blockchain.js');
+const blockchainApi = new BlockchainApi(io);
+const authentification = require('./server/authentification.js');
 
 
 
@@ -29,12 +33,12 @@ app.use(function (req, res, next) {
 })
 
 app.get('/EnergySystemTokenFactory', (req, res) => {
-    blockchain.getEnergySystemTokenFactory(req, res);
+    blockchainApi.getEnergySystemTokenFactory(req, res);
 })
 
 
 app.get('/EnergySystemTokenAbi', (req, res) => {
-    blockchain.getEnergySystemTokenAbi(req, res);
+    blockchainApi.getEnergySystemTokenAbi(req, res);
 })
 
 
@@ -47,25 +51,27 @@ app.get('/Authenticated', (req, res) => {
 
 
 app.get('/transactionReceipt', (req, res) => {
-    blockchain.getTransactionReceipt(req, res);
+    blockchainApi.getTransactionReceipt(req, res);
 })
 
 
 app.get('/LastEnergySystemTokenAddressForUser', (req, res) => {
-    blockchain.getLastEnergySystemTokenAddressForUser(req, res);
+    blockchainApi.getLastEnergySystemTokenAddressForUser(req, res);
 })
 
 
 app.get('/AllEnergySystemTokenAddressesForUser', (req, res) => {
-    blockchain.getAllEnergySystemTokenAddressesForUser(req, res);
+    blockchainApi.getAllEnergySystemTokenAddressesForUser(req, res);
 })
 
 
 app.get('/AllEnergySystemTokenAddresses', (req, res) => {
-    blockchain.getAllEnergySystemTokenAddresses(req, res);
+    blockchainApi.getAllEnergySystemTokenAddresses(req, res);
 })
 
 
 app.listen(8000, function() {
-    console.log('Example app listening on port 8000!');
+    console.log('App listening on port 8000!');
 });
+
+
