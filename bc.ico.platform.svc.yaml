@@ -13,4 +13,7 @@ spec:
     - port: 8000
       targetPort: 8000
       protocol: "TCP"
+    - port: 8545
+      targetPort: 8545
+      protocol: "TCP"
  
