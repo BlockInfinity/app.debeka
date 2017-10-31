@@ -1,0 +1,3 @@
+[submodule "bc.ico.contractdeployer"]
+	path = bc.ico.contractdeployer
+	url = https://enbw.visualstudio.com/DefaultCollection/Blockchain-Common/_git/bc.ico.contractdeployer
