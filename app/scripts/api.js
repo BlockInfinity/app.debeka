@@ -104,7 +104,7 @@ module.exports.getEnergySystemTokenBalance = function(_energySystemTokenAddress,
         window.estoken = estoken;
         return new Promise((resolve, reject) => {
             estoken.balanceOf(_user, { from: _user }, function(error, result) {
-                if (error) throw error;
+                if (error) reject(error);
                 resolve(result.toNumber());
             });
         })
@@ -137,14 +137,25 @@ module.exports.isAuthenticated = function() {
 
 
 module.exports.getTotalNumberOfTokens = function(_energySystemTokenAddress) {
-
+    return getEnergySystemToken(_energySystemTokenAddress).then(estoken => {
+        return new Promise((resolve, reject) => {
+            estoken.totalSupply((error, result) => {
+                if (error) reject(error);
+                resolve(result.toNumber());
+            });
+        })
+    })
 }
 
 
-// returns {price, orders[]} for a specific _energySystemTokenAddress
-module.exports.getFulfilledOrders = function(_energySystemTokenAddress) {
-
-}
+// // returns {price, orders[]} for a specific _energySystemTokenAddress
+// module.exports.getFulfilledOrders = function(_energySystemTokenAddress) {
+//     return getEnergySystemToken(_energySystemTokenAddress).then(estoken => {
+//         return new Promise((resolve, reject) => {
+//             estoken.
+//         })
+//     })
+// }
 
 
 module.exports.getRaisedEther = function(_energySystemTokenAddress) {
@@ -224,4 +235,3 @@ function fetchWithAuth(_ressource) {
         return fetch(`${_ressource}?${res}`);
     })
 }
-

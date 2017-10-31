@@ -21,15 +21,14 @@ describe('api.js', function() {
         done();
     });
 
+    let _initialAmount = 100
+    let _decimalUnits = 100
+    let _fundingGoal = web3.toWei(100)
+    let _fundingPeriod = 100
+    let _price = 100
+
     it('createEnergySystemToken', function(done) {
-        this.timeout(30000)
-
-        let _initialAmount = 100
-        let _decimalUnits = 100
-        let _fundingGoal = web3.toWei(100)
-        let _fundingPeriod = 100
-        let _price = 100
-
+        this.timeout(60000)
         api.createEnergySystemToken(_initialAmount, _decimalUnits, _fundingGoal, _fundingPeriod, _price).then(res => {
             assert(res);
             done();
@@ -38,6 +37,7 @@ describe('api.js', function() {
 
     it('EnergySystemTokenCreationEvent', (done) => {
         socketPromise.then(data => {
+            this.timeout(60000)
             console.log(`Client Side: Received EnergySystemTokenCreationEvent with data ${data}`)
             done();
         })
@@ -108,5 +108,15 @@ describe('api.js', function() {
             done()
         })
     });
+
+    it('getTotalNumberOfTokens', function(done) {
+        this.timeout(10000)
+        api.getTotalNumberOfTokens(estoken).then(res => {
+            console.log("totalsupply", res);
+            assert(res == _initialAmount, `${res} == ${_initialAmount}`)
+            done()
+        })
+    });
+
 
 });
