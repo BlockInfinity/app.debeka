@@ -11,9 +11,11 @@ spec:
     app: "ico-platform"
   ports:
     - port: 8000
+      name: "platform"
       targetPort: 8000
       protocol: "TCP"
     - port: 8545
+      name: "testrpc"
       targetPort: 8545
       protocol: "TCP"
  
