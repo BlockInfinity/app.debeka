@@ -103,7 +103,7 @@ module.exports.getEnergySystemTokenBalance = function(_energySystemTokenAddress,
         console.log("_user", _user)
         window.estoken = estoken;
         return new Promise((resolve, reject) => {
-            estoken.balanceOf(_user, { from: _user }, function(error, result) {
+            estoken.balanceOf(_energySystemTokenAddress, { from: _user }, function(error, result) {
                 if (error) reject(error);
                 resolve(result.toNumber());
             });
@@ -147,6 +147,42 @@ module.exports.getTotalNumberOfTokens = function(_energySystemTokenAddress) {
     })
 }
 
+module.exports.setPrices = function(_energySystemTokenAddress, _newSellPrice, _newBuyPrice, _user = web3.eth.defaultAccount) {
+    return getEnergySystemToken(_energySystemTokenAddress).then(estoken => {
+        return new Promise((resolve, reject) => {
+            estoken.setPrices(_newSellPrice, _newBuyPrice, { from: _user }, (error, txhash) => {
+                if (error) {
+                    reject(error);
+                }
+                console.log("setPrices() txhash: ", txhash)
+                resolve(txhash);
+            })
+        })
+    })
+}
+
+
+module.exports.buy = function(_energySystemTokenAddress, _value, _user = web3.eth.defaultAccount) {
+    return getEnergySystemToken(_energySystemTokenAddress).then(estoken => {
+        return new Promise((resolve, reject) => {
+            estoken.buy({ from: _user, value: _value }, (error, txhash) => {
+                if (error) {
+                    reject(error);
+                }
+                console.log("buy() txhash: ", txhash)
+                resolve(txhash);
+            })
+        })
+    })
+}
+
+
+// Zurücktauschen von tokens gegen ether während der funding phase 
+module.exports.sell = function(_energySystemTokenAddress) {
+    // - sol function getMoneyBack() 
+}
+
+
 
 // // returns {price, orders[]} for a specific _energySystemTokenAddress
 // module.exports.getFulfilledOrders = function(_energySystemTokenAddress) {
@@ -169,8 +205,10 @@ module.exports.buyEnergySystemTokens = function(_energySystemTokenAddress, _valu
 }
 
 
+
+
 // Zurücktauschen von tokens gegen ether während der funding phase 
-module.exports.getMoneyBack = function(_energySystemTokenAddress) {
+module.exports.getPrice = function(_energySystemTokenAddress) {
     // - sol function getMoneyBack() 
 }
 

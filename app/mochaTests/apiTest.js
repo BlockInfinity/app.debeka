@@ -36,8 +36,8 @@ describe('api.js', function() {
     });
 
     it('EnergySystemTokenCreationEvent', (done) => {
+        this.timeout(60000)
         socketPromise.then(data => {
-            this.timeout(60000)
             console.log(`Client Side: Received EnergySystemTokenCreationEvent with data ${data}`)
             done();
         })
@@ -92,7 +92,7 @@ describe('api.js', function() {
 
 
     it('getEnergySystemTokenBalance', function(done) {
-        this.timeout(10000)
+        this.timeout(60000)
         api.getEnergySystemTokenBalance(estoken).then(balance => {
             console.log("balance", balance);
             assert(balance == 100, `${balance} == 100`)
@@ -117,6 +117,27 @@ describe('api.js', function() {
             done()
         })
     });
+
+
+    it('setPrices', function(done) {
+        this.timeout(60000)
+        api.setPrices(estoken, web3.toWei(1), web3.toWei(1)).then(res => {
+            assert(res, `${res}`)
+            done()
+        })
+    });
+
+    it('buy', function(done) {
+        this.timeout(60000)
+        api.buy(estoken, web3.toWei(1)).then(res => {
+            assert(res, `${res}`)
+            done()
+        })
+    });
+
+
+
+
 
 
 });
