@@ -238,6 +238,21 @@ module.exports.getPrices = function(_energySystemTokenAddress) {
 
 
 module.exports.getTimeLeftForFundingPhase = function(_energySystemTokenAddress) {
+    return getEnergySystemToken(_energySystemTokenAddress).then(estoken => {
+        return new Promise((resolve, reject) => {
+            estoken.getTimeLeft((error, timeLeft) => {
+                if (error) reject(error);
+                resolve({
+                    timeLeft: timeLeft.toNumber(),
+                })
+            })
+        })
+    })
+}
+
+
+// ruft die enbw oder der besitzer auf um erträge an die shareholder auszuzahlen  
+module.exports.disburse = function(_energySystemTokenAddress) {
 
 }
 
@@ -266,10 +281,6 @@ module.exports.transferFromEnergySystemShares = function(_from, _to, _value) {
 }
 
 
-// ruft die enbw oder der besitzer auf um erträge an die shareholder auszuzahlen  
-module.exports.disburse = function(_energySystemTokenAddress) {
-
-}
 
 // merges properties of both objects, so that i can access the functions in browser via window. 
 Object.assign(window, module.exports)

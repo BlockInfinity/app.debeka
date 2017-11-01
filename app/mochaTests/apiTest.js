@@ -260,7 +260,7 @@ describe('api.js', function() {
         });
     });
 
-    it('getPrices', function(done) {
+    it.skip('getPrices', function(done) {
         this.timeout(30000)
         let p1;
         if (!estoken) {
@@ -285,6 +285,37 @@ describe('api.js', function() {
                 api.getPrices(estoken).then(res => {
                     assert(res.buyPrice == web3.toWei(1), `${res.buyPrice} == ${web3.toWei(1)}`);
                     assert(res.sellPrice == web3.toWei(1), `${res.sellPrice} == ${web3.toWei(1)}`);
+                    done();
+                });
+            });
+        });
+    });
+
+    it('getTimeLeftForFundingPhase', function(done) {
+        this.timeout(30000)
+        let p1;
+        if (!estoken) {
+            p1 = api.createEnergySystemToken(_initialAmount, _decimalUnits, _fundingGoal, _fundingPeriod, _price)
+        } else {
+            p1 = Promise.resolve({ _contract: estoken })
+        }
+
+        p1.then(res1 => {
+            estoken = res1._contract;
+
+            let p2;
+            if (!pricesSet) {
+                console.log(1);
+                p2 = api.setPrices(estoken, web3.toWei(1), web3.toWei(1))
+            } else {
+                console.log(2);
+                p2 = Promise.resolve();
+            }
+
+            p2.then(() => {
+                api.getTimeLeftForFundingPhase(estoken).then(res => {
+                    console.log("res.timeLeft: ", res.timeLeft)
+                    assert(res.timeLeft, `${res.timeLeft}`);
                     done();
                 });
             });
