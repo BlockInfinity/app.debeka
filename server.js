@@ -9,7 +9,6 @@ const blockchainApi = new BlockchainApi(io);
 const authentification = require('./server/authentification.js');
 
 
-
 app.use('/', express.static('public'))
 
 
@@ -65,10 +64,12 @@ app.get('/AllEnergySystemTokenAddresses', (req, res) => {
     blockchainApi.getAllEnergySystemTokenAddresses(req, res);
 })
 
+
 // expects energySystemTokenAddress as parameter
 app.get('/FulfilledOrders', (req, res) => {
     blockchainApi.getFulfilledOrders(req, res);
 })
+
 
 // expect energySystemTokenAddress, eventName as parameters
 app.get('/EventListener', (req, res) => {

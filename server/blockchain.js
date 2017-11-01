@@ -42,6 +42,7 @@ module.exports = class Blockchain {
     // ########################## helper functions  
     // ####################################################
 
+
     connect(bcUrl = 'http://localhost:8545') {
         this.web3 = new Web3(new Web3.providers.HttpProvider(process.env.nodeUrl));
         if (this.web3 && !this.web3.isConnected()) {
@@ -52,6 +53,7 @@ module.exports = class Blockchain {
         }
         return this.web3;
     }
+
 
     getESTokenCreationEvents(filter) {
         return new Promise((resolve, reject) => {
@@ -82,7 +84,6 @@ module.exports = class Blockchain {
             });
         })
     }
-
 
 
     getEnergySystemTokenAbi_internal() {
@@ -117,7 +118,6 @@ module.exports = class Blockchain {
             }
         });
     }
-
 
 
     getEnergySystemToken(_energySystemTokenAddress) {
@@ -168,6 +168,7 @@ module.exports = class Blockchain {
         let filter = { _to: _energySystemTokenAddress };
         return this.getTransferEvents(_energySystemTokenAddress, filter);
     }
+
 
     listenToEvent(_contract, _eventName, filter = {}) {
         try {
