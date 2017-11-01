@@ -101,7 +101,7 @@ describe('api.js', function() {
 
     let pricesSet = false;
 
-    it('setPrices', function(done) {
+    it.skip('setPrices', function(done) {
         this.timeout(50000)
 
         let p1;
@@ -155,28 +155,64 @@ describe('api.js', function() {
         })
     });
 
-
     it.skip('sell', function(done) {
-        this.timeout(30000)
-        api.createEnergySystemToken(_initialAmount, _decimalUnits, _fundingGoal, _fundingPeriod, _price).then(res => {
-            api.getLastEnergySystemTokenAddressForUser().then(res => {
-                let estoken = res.contract;
-                api.setPrices(estoken, web3.toWei(1), web3.toWei(1)).then(res => {
-                    api.sell(estoken, 1).then(res => {
-                        assert(res, `${res}`)
+        this.timeout(50000)
+
+        let p1;
+        if (!estoken) {
+            p1 = api.createEnergySystemToken(_initialAmount, _decimalUnits, _fundingGoal, _fundingPeriod, _price)
+        } else {
+            p1 = Promise.resolve({ _contract: estoken })
+        }
+
+        p1.then(res1 => {
+            estoken = res1._contract;
+
+            let p2;
+            if (!pricesSet) {
+                console.log(1);
+                p2 = api.setPrices(estoken, web3.toWei(1), web3.toWei(1))
+            } else {
+                console.log(2);
+                p2 = Promise.resolve();
+            }
+
+            p2.then(() => {
+                api.buy(estoken, web3.toWei(1)).then(res2 => {
+                    api.sell(estoken, 1).then(res2 => {
+                        assert(res2, `${res2}`)
                         done()
                     })
                 })
             })
+
         })
     });
 
 
-    it.skip('getFulfilledOrders', function(done) {
+
+    it('getFulfilledOrders', function(done) {
         this.timeout(60000)
-        api.createEnergySystemToken(_initialAmount, _decimalUnits, _fundingGoal, _fundingPeriod, _price).then(res => {
-            api.getLastEnergySystemTokenAddressForUser().then(res => {
-                estoken = res.contract;
+        let p1;
+        if (!estoken) {
+            p1 = api.createEnergySystemToken(_initialAmount, _decimalUnits, _fundingGoal, _fundingPeriod, _price)
+        } else {
+            p1 = Promise.resolve({ _contract: estoken })
+        }
+
+        p1.then(res1 => {
+            estoken = res1._contract;
+
+            let p2;
+            if (!pricesSet) {
+                console.log(1);
+                p2 = api.setPrices(estoken, web3.toWei(1), web3.toWei(1))
+            } else {
+                console.log(2);
+                p2 = Promise.resolve();
+            }
+
+            p2.then(() => {
                 api.buy(estoken, web3.toWei(1)).then(res => {
                     api.sell(estoken, 1).then(res => {
                         api.getFulfilledOrders(estoken).then(res => {
@@ -184,6 +220,7 @@ describe('api.js', function() {
                             assert(res, `${res}`);
                             done();
                         });
+
                     });
                 });
             });

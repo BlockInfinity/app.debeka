@@ -169,10 +169,10 @@ module.exports = class Blockchain {
         return this.getTransferEvents(_energySystemTokenAddress, filter);
     }
 
-    listenToEvent(_contract, _eventName) {
+    listenToEvent(_contract, _eventName, filter = {}) {
         try {
             console.log("address in listentoevent function: ", _contract.address)
-            _contract[_eventName]((error, event) => {
+            _contract[_eventName](filter, (error, event) => {
                 if (error) throw error;
                 console.log("in listenToEvent ", event);
                 this.io.emit(_eventName, `${JSON.stringify(event.args)}`);
@@ -189,10 +189,13 @@ module.exports = class Blockchain {
     eventListener(request, response) {
         let energySystemTokenAddress = request.query.energySystemTokenAddress;
         let eventName = request.query.eventName;
-        console.log(1, energySystemTokenAddress, eventName)
+        let filter = {};
+        if (request.query.filter) {
+            filter = request.query.filter;
+        }
+
         this.getEnergySystemToken(energySystemTokenAddress).then(estoken => {
-            console.log(2)
-            this.listenToEvent(estoken, eventName);
+            this.listenToEvent(estoken, eventName, filter);
             response.send(`Server is listening to ${eventName} from EnergySystemToken with address ${estoken}`)
         })
     }
@@ -204,9 +207,12 @@ module.exports = class Blockchain {
         let p1 = this.getFulfilledBuyOrders(energySystemTokenAddress);
         let p2 = this.getFulfilledSellOrders(energySystemTokenAddress);
         console.log(3);
-        Promise.all(p1, p2).then(values => {
-            console.log(4, values);
-            response.json(JSON.parse(values));
+        p1.then(buyOrders => {
+            console.log(4);
+            p2.then(sellOrders => {
+                console.log(5);
+                response.json({ buyOrders, sellOrders })
+            })
         }).catch(err => {
             response.status(500).send(err);
         });
