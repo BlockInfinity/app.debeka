@@ -83,12 +83,7 @@ module.exports = class Blockchain {
         })
     }
 
-    listenToEvent(_contract, _eventName, _namesOfReturnValues) {
-        _contract[_eventName]((error, event) => {
-            console.log("in listenToEvent ", event);
-            this.io.emit(_eventName, `${JSON.stringify(event.args)}`);
-        })
-    }
+
 
     getEnergySystemTokenAbi_internal() {
         return new Promise((resolve, reject) => {
@@ -174,10 +169,33 @@ module.exports = class Blockchain {
         return this.getTransferEvents(_energySystemTokenAddress, filter);
     }
 
+    listenToEvent(_contract, _eventName) {
+        try {
+            console.log("address in listentoevent function: ", _contract.address)
+            _contract[_eventName]((error, event) => {
+                if (error) throw error;
+                console.log("in listenToEvent ", event);
+                this.io.emit(_eventName, `${JSON.stringify(event.args)}`);
+            })
+        } catch (err) { console.error(`error in listenToEvent: ${err}`) }
+    }
+
+
     // ####################################################
     // ########################## exposed functions 
     // ####################################################
 
+
+    eventListener(request, response) {
+        let energySystemTokenAddress = request.query.energySystemTokenAddress;
+        let eventName = request.query.eventName;
+        console.log(1, energySystemTokenAddress, eventName)
+        this.getEnergySystemToken(energySystemTokenAddress).then(estoken => {
+            console.log(2)
+            this.listenToEvent(estoken, eventName);
+            response.send(`Server is listening to ${eventName} from EnergySystemToken with address ${estoken}`)
+        })
+    }
 
     // returns [{transactionHash, blockNumber, from, to, value}, ...]
     getFulfilledOrders(request, response) {

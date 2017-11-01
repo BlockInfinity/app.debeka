@@ -140,13 +140,18 @@ module.exports.getTotalNumberOfTokens = function(_energySystemTokenAddress) {
 
 module.exports.setPrices = function(_energySystemTokenAddress, _newSellPrice, _newBuyPrice) {
     return getEnergySystemToken(_energySystemTokenAddress).then(estoken => {
-        return new Promise((resolve, reject) => {
-            estoken.setPrices(_newSellPrice, _newBuyPrice, { from: web3.eth.defaultAccount }, (error, txhash) => {
-                if (error) {
-                    reject(error);
-                }
-                console.log("setPrices() txhash: ", txhash)
-                resolve(txhash);
+        return fetch(`/EventListener?energySystemTokenAddress=${_energySystemTokenAddress}&eventName=PricesSet`).then(response => {
+            return new Promise((resolve, reject) => {
+                console.log("address in setPrices function: ",estoken.address)
+                estoken.setPrices(_newSellPrice, _newBuyPrice, { from: web3.eth.defaultAccount }, (error, txhash) => {
+                    if (error) {
+                        reject(error);
+                    }
+                    console.log("setPrices() txhash: ", txhash)
+                    socket.on('PricesSet', (args) => {
+                        resolve(JSON.parse(args));
+                    })
+                })
             })
         })
     })
