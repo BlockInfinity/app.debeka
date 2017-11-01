@@ -40,7 +40,6 @@ module.exports.getEtherBalance = function(_user = web3.eth.defaultAccount) {
 module.exports.createEnergySystemToken = function(_initialAmount, _decimalUnits, _fundingGoal, _fundingPeriod, _price) {
 
     return fetch('/EnergySystemTokenFactory').then(response => {
-        console.log("got reponse");
         if (response.status !== 200) {
             let msg = `Looks like there was a problem. Status Code: + ${response.status}`
             return Promise.reject(msg);
@@ -104,8 +103,6 @@ module.exports.getAllEnergySystemTokenAddresses = function() {
 module.exports.getEnergySystemTokenBalance = function(_energySystemTokenAddress, _user = web3.eth.defaultAccount) {
 
     return getEnergySystemToken(_energySystemTokenAddress).then(estoken => {
-        console.log("in api.js getEnergySystemTokenBalance", estoken)
-        console.log("_user", _user)
         window.estoken = estoken;
         return new Promise((resolve, reject) => {
             estoken.balanceOf(_energySystemTokenAddress, { from: _user }, function(error, result) {
@@ -142,12 +139,10 @@ module.exports.setPrices = function(_energySystemTokenAddress, _newSellPrice, _n
     return getEnergySystemToken(_energySystemTokenAddress).then(estoken => {
         return fetch(`/EventListener?energySystemTokenAddress=${_energySystemTokenAddress}&eventName=PricesSet`).then(response => {
             return new Promise((resolve, reject) => {
-                console.log("address in setPrices function: ", estoken.address)
                 estoken.setPrices(_newSellPrice, _newBuyPrice, { from: web3.eth.defaultAccount }, (error, txhash) => {
                     if (error) {
                         reject(error);
                     }
-                    console.log("setPrices() txhash: ", txhash)
                     socket.on('PricesSet', (args) => {
                         resolve(JSON.parse(args));
                     })
@@ -252,34 +247,71 @@ module.exports.getTimeLeftForFundingPhase = function(_energySystemTokenAddress) 
 
 
 // ruft die enbw oder der besitzer auf um erträge an die shareholder auszuzahlen  
-module.exports.disburse = function(_energySystemTokenAddress) {
-
+module.exports.disburse = function(_energySystemTokenAddress, _value) {
+    return getEnergySystemToken(_energySystemTokenAddress).then(estoken => {
+        return fetch(`/EventListener?energySystemTokenAddress=${_energySystemTokenAddress}&eventName=DisburseEvent&filter={ _energysupplier:${web3.eth.defaultAccount}}`).then(response => {
+            return new Promise((resolve, reject) => {
+                estoken.disburse({ from: web3.eth.defaultAccount, value: _value }, (error, txhash) => {
+                    if (error) {
+                        reject(error);
+                    }
+                    socket.on('DisburseEvent', (args) => {
+                        resolve(JSON.parse(args));
+                    })
+                })
+            })
+        })
+    })
 }
 
 
 // erträge im energysystemtoken contract ausbezahlen lassen 
 module.exports.withdraw = function(_energySystemTokenAddress) {
-
+    return getEnergySystemToken(_energySystemTokenAddress).then(estoken => {
+        return fetch(`/EventListener?energySystemTokenAddress=${_energySystemTokenAddress}&eventName=WithdrawEvent&filter={ _user:${web3.eth.defaultAccount}}`).then(response => {
+            return new Promise((resolve, reject) => {
+                estoken.withdraw({ from: web3.eth.defaultAccount }, (error, txhash) => {
+                    if (error) {
+                        reject(error);
+                    }
+                    socket.on('WithdrawEvent', (args) => {
+                        resolve(JSON.parse(args));
+                    })
+                })
+            })
+        })
+    })
 }
 
 
 //  function for future trading enhancement
 module.exports.transferEther = function(_to, _value) {
-
+    return new Promise((resolve, reject) => {
+        web3.eth.sendTransaction({ from: web3.eth.defaultAccount, to: _to, value: _value }, (error, result) => {
+            if (error) reject(error)
+            else resolve(result)
+        });
+    })
 }
 
 
 //  function for future trading enhancement
-module.exports.transferEnergySystemShares = function(_to, _value) {
-
+module.exports.transferEnergySystemShares = function(_energySystemTokenAddress, _to, _value) {
+    return getEnergySystemToken(_energySystemTokenAddress).then(estoken => {
+        return fetch(`/EventListener?energySystemTokenAddress=${_energySystemTokenAddress}&eventName=Transfer&filter={ _from:${web3.eth.defaultAccount}}`).then(response => {
+            return new Promise((resolve, reject) => {
+                estoken.transfer(_to, _value, { from: web3.eth.defaultAccount, gas: 120000 }, (error, txhash) => {
+                    if (error) {
+                        reject(error);
+                    }
+                    socket.on('Transfer', (args) => {
+                        resolve(JSON.parse(args));
+                    })
+                })
+            })
+        })
+    })
 }
-
-
-//  function for future trading enhancement
-module.exports.transferFromEnergySystemShares = function(_from, _to, _value) {
-
-}
-
 
 
 // merges properties of both objects, so that i can access the functions in browser via window. 
@@ -306,10 +338,8 @@ function getEnergySystemToken(_energySystemTokenAddress, _user = web3.eth.defaul
     return new Promise((resolve, reject) => {
         return fetch('/EnergySystemTokenAbi').then(response => {
             return response.json().then(function(data) {
-                console.log("/EnergySystemTokenAbi reponse abi", data.abi)
                 let abi = data.abi;
                 let contract = web3.eth.contract(abi);
-                console.log("after web3.eth.contract")
                 let estoken = contract.at(_energySystemTokenAddress);
                 resolve(estoken);
             })
