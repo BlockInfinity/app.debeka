@@ -37,7 +37,11 @@ module.exports = class Blockchain {
         this.connect();
     }
 
-    // helper functions  
+
+    // ####################################################
+    // ########################## helper functions  
+    // ####################################################
+
     connect(bcUrl = 'http://localhost:8545') {
         this.web3 = new Web3(new Web3.providers.HttpProvider(process.env.nodeUrl));
         if (this.web3 && !this.web3.isConnected()) {
@@ -86,7 +90,111 @@ module.exports = class Blockchain {
         })
     }
 
-    // externally used functions 
+    getEnergySystemTokenAbi_internal() {
+        return new Promise((resolve, reject) => {
+            try {
+                // file does not exist || contract is not deployed || or sth. else
+                fs.readFile(pathToken, 'utf8', (err, dataToken) => {
+                    if (err) throw err;
+                    fs.readFile(pathStandardToken, 'utf8', (err, dataStandardToken) => {
+                        if (err) throw err;
+                        fs.readFile(pathHumanStandardToken, 'utf8', (err, dataHumanStandardToken) => {
+                            if (err) throw err;
+                            fs.readFile(pathEnergySystemToken, 'utf8', (err, dataEstoken) => {
+                                if (err) throw err;
+
+                                // compile and extract data for contract creation
+                                let input = {
+                                    'EnergySystemToken.sol': dataEstoken,
+                                    'HumanStandardToken.sol': dataHumanStandardToken,
+                                    'StandardToken.sol': dataStandardToken,
+                                    'Token.sol': dataToken
+                                }
+                                let output = solc.compile({ sources: input }, 1);
+                                let abi = JSON.parse(output.contracts['EnergySystemToken.sol:EnergySystemToken'].interface);
+                                resolve(abi)
+                            });
+                        });
+                    });
+                });
+            } catch (err) {
+                reject(err)
+            }
+        });
+    }
+
+
+
+    getEnergySystemToken(_energySystemTokenAddress) {
+        return new Promise((resolve, reject) => {
+            return this.getEnergySystemTokenAbi_internal().then(abi => {
+                let contract = this.web3.eth.contract(abi);
+                let estoken = contract.at(_energySystemTokenAddress);
+                resolve(estoken);
+            })
+        })
+    }
+
+
+    getTransferEvents(_energySystemTokenAddress, _filter) {
+        return this.getEnergySystemToken(_energySystemTokenAddress).then(estoken => {
+            return new Promise((resolve, reject) => {
+                estoken.Transfer(_filter, { fromBlock: 0, toBlock: 'latest' }).get((error, events) => {
+                    if (error) {
+                        console.log('Error in Transfer event handler: ' + error);
+                    } else {
+                        let output = [];
+                        for (let i in events) {
+                            output.push({
+                                transactionHash: events[i].transactionHash,
+                                blockNumber: events[i].blockNumber,
+                                from: events[i].args._from,
+                                to: events[i].args._to,
+                                value: events[i].args._value,
+                            })
+                        }
+                        console.log(2)
+                        resolve(output);
+                    }
+                });
+            })
+        })
+    }
+
+
+    getFulfilledBuyOrders(_energySystemTokenAddress) {
+        let filter = { _from: _energySystemTokenAddress };
+        return this.getTransferEvents(_energySystemTokenAddress, filter);
+    }
+
+
+
+    getFulfilledSellOrders(_energySystemTokenAddress) {
+        let filter = { _to: _energySystemTokenAddress };
+        return this.getTransferEvents(_energySystemTokenAddress, filter);
+    }
+
+    // ####################################################
+    // ########################## exposed functions 
+    // ####################################################
+
+
+    // returns [{transactionHash, blockNumber, from, to, value}, ...]
+    getFulfilledOrders(request, response) {
+        console.log(1);
+        let energySystemTokenAddress = request.query.energySystemTokenAddress;
+        let p1 = this.getFulfilledBuyOrders(energySystemTokenAddress);
+        let p2 = this.getFulfilledSellOrders(energySystemTokenAddress);
+        console.log(3);
+        Promise.all(p1, p2).then(values => {
+            console.log(4, values);
+            response.json(JSON.parse(values));
+        }).catch(err => {
+            response.status(500).send(err);
+        });
+    }
+
+
     getEnergySystemTokenFactory(req, response) {
         try {
             fs.readFile(pathContractData, (err, data) => {
@@ -152,7 +260,7 @@ module.exports = class Blockchain {
 
                                             // debug purposes 
                                             this.listenToEvent(instance, "EnergySystemTokenCreationEvent", ["_contract", "_from", "totalSupply"])
- 
+
                                             let address = instance.address
                                             fs.writeFile('./server/contractData/EnergySystemTokenFactoryAndAddress.json', JSON.stringify({ abi, address }), (err) => {
                                                 if (err) throw err;
@@ -247,37 +355,10 @@ module.exports = class Blockchain {
     }
 
     getEnergySystemTokenAbi(request, response) {
-        try {
-            // file does not exist || contract is not deployed || or sth. else
-            fs.readFile(pathToken, 'utf8', (err, dataToken) => {
-                if (err) throw err;
-                fs.readFile(pathStandardToken, 'utf8', (err, dataStandardToken) => {
-                    if (err) throw err;
-                    fs.readFile(pathHumanStandardToken, 'utf8', (err, dataHumanStandardToken) => {
-                        if (err) throw err;
-                        fs.readFile(pathEnergySystemToken, 'utf8', (err, dataEstoken) => {
-                            if (err) throw err;
-
-                            console.log("############ getEnergySystemTokenAbi")
-
-                            // compile and extract data for contract creation
-                            let input = {
-                                'EnergySystemToken.sol': dataEstoken,
-                                'HumanStandardToken.sol': dataHumanStandardToken,
-                                'StandardToken.sol': dataStandardToken,
-                                'Token.sol': dataToken
-                            }
-                            let output = solc.compile({ sources: input }, 1);
-                            let abi = JSON.parse(output.contracts['EnergySystemToken.sol:EnergySystemToken'].interface);
-                            console.log("############ abi", abi)
-                            response.json({ abi })
-                        });
-                    });
-                });
-            });
-        } catch (err) {
+        this.getEnergySystemTokenAbi_internal().then(abi => {
+            response.json({ abi })
+        }).catch(err => {
             response.status(500).send(`Error when trying to retrieve EnergySystemTokenFactory: ${err}`)
-        }
+        })
     }
-
 }

@@ -66,6 +66,11 @@ app.get('/AllEnergySystemTokenAddresses', (req, res) => {
 })
 
 
+app.get('/FulfilledOrders', (req, res) => {
+    blockchainApi.getFulfilledOrders(req, res);
+})
+
+
 server.listen(8000, function() {
     console.log('App listening on port 8000!');
 });

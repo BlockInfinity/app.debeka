@@ -1,4 +1,7 @@
 "use strict";
+let io = require('socket.io-client');
+const socket = io(window.location.host);
+
 
 // gibt true zurück, wenn Account in MetaMask geladen ist
 module.exports.isAccountLoaded = function() {
@@ -53,7 +56,9 @@ module.exports.createEnergySystemToken = function(_initialAmount, _decimalUnits,
                         reject(error);
                     }
                     console.log("EnergySystemToken Creation txhash: ", txhash)
-                    resolve(txhash);
+                    socket.on('EnergySystemTokenCreationEvent', (args) => {
+                        resolve(JSON.parse(args));
+                    })
                 })
             }).catch(err => {
                 console.log(`${err} createEnergySystemToken`)
@@ -112,20 +117,6 @@ module.exports.getEnergySystemTokenBalance = function(_energySystemTokenAddress,
 }
 
 
-function getSignatureParameterString() {
-    return new Promise((resolve, reject) => {
-        let message = web3.sha3("0x135a7de83802408321b74c322f8558db1679ac20");
-        web3.eth.sign(web3.eth.defaultAccount, message, (error, signature) => {
-            if (error) {
-                reject(error);
-            } else {
-                let parameterString = `userAddress=${web3.eth.defaultAccount}&signature=${signature}&message=${message}`
-                resolve(parameterString);
-            }
-        })
-    });
-}
-
 // test function for fetchWithAuth helper function 
 module.exports.isAuthenticated = function() {
     return fetchWithAuth("/Authenticated").then(response => {
@@ -147,10 +138,10 @@ module.exports.getTotalNumberOfTokens = function(_energySystemTokenAddress) {
     })
 }
 
-module.exports.setPrices = function(_energySystemTokenAddress, _newSellPrice, _newBuyPrice, _user = web3.eth.defaultAccount) {
+module.exports.setPrices = function(_energySystemTokenAddress, _newSellPrice, _newBuyPrice) {
     return getEnergySystemToken(_energySystemTokenAddress).then(estoken => {
         return new Promise((resolve, reject) => {
-            estoken.setPrices(_newSellPrice, _newBuyPrice, { from: _user }, (error, txhash) => {
+            estoken.setPrices(_newSellPrice, _newBuyPrice, { from: web3.eth.defaultAccount }, (error, txhash) => {
                 if (error) {
                     reject(error);
                 }
@@ -162,10 +153,11 @@ module.exports.setPrices = function(_energySystemTokenAddress, _newSellPrice, _n
 }
 
 
-module.exports.buy = function(_energySystemTokenAddress, _value, _user = web3.eth.defaultAccount) {
+// während der fundingphase
+module.exports.buy = function(_energySystemTokenAddress, _value) {
     return getEnergySystemToken(_energySystemTokenAddress).then(estoken => {
         return new Promise((resolve, reject) => {
-            estoken.buy({ from: _user, value: _value }, (error, txhash) => {
+            estoken.buy({ from: web3.eth.defaultAccount, value: _value }, (error, txhash) => {
                 if (error) {
                     reject(error);
                 }
@@ -177,21 +169,30 @@ module.exports.buy = function(_energySystemTokenAddress, _value, _user = web3.et
 }
 
 
-// Zurücktauschen von tokens gegen ether während der funding phase 
-module.exports.sell = function(_energySystemTokenAddress) {
-    // - sol function getMoneyBack() 
+// während der fundingphase
+module.exports.sell = function(_energySystemTokenAddress, _value) {
+    return getEnergySystemToken(_energySystemTokenAddress).then(estoken => {
+        return new Promise((resolve, reject) => {
+            estoken.sell(_value, { from: web3.eth.defaultAccount }, (error, txhash) => {
+                if (error) {
+                    reject(error);
+                }
+                console.log("sell() txhash: ", txhash)
+                resolve(txhash);
+            })
+        })
+    })
 }
 
 
+module.exports.getFulfilledOrders = function(_energySystemTokenAddress) {
+    return fetch(`/FulfilledOrders?energySystemTokenAddress=${_energySystemTokenAddress}`).then(response => {
+        return response.json();
+    }).then(res => {
+        return res;
+    });
+}
 
-// // returns {price, orders[]} for a specific _energySystemTokenAddress
-// module.exports.getFulfilledOrders = function(_energySystemTokenAddress) {
-//     return getEnergySystemToken(_energySystemTokenAddress).then(estoken => {
-//         return new Promise((resolve, reject) => {
-//             estoken.
-//         })
-//     })
-// }
 
 
 module.exports.getRaisedEther = function(_energySystemTokenAddress) {
@@ -251,7 +252,22 @@ module.exports.disburse = function(_energySystemTokenAddress) {
 Object.assign(window, module.exports)
 
 
-// helper function 
+// #################### helper function 
+
+function getSignatureParameterString() {
+    return new Promise((resolve, reject) => {
+        let message = web3.sha3("0x135a7de83802408321b74c322f8558db1679ac20");
+        web3.eth.sign(web3.eth.defaultAccount, message, (error, signature) => {
+            if (error) {
+                reject(error);
+            } else {
+                let parameterString = `userAddress=${web3.eth.defaultAccount}&signature=${signature}&message=${message}`
+                resolve(parameterString);
+            }
+        })
+    });
+}
+
 function getEnergySystemToken(_energySystemTokenAddress, _user = web3.eth.defaultAccount) {
     return new Promise((resolve, reject) => {
         return fetch('/EnergySystemTokenAbi').then(response => {
@@ -267,7 +283,7 @@ function getEnergySystemToken(_energySystemTokenAddress, _user = web3.eth.defaul
     })
 }
 
-// use this instead of fetch when retrieving /use/ ressources
+// use this instead of fetch when retrieving /user/ ressources
 function fetchWithAuth(_ressource) {
     return getSignatureParameterString().then(res => {
         return fetch(`${_ressource}?${res}`);

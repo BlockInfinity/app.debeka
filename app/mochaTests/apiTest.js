@@ -1,23 +1,13 @@
 let assert = chai.assert;
 let api = require('../scripts/api.js')
-let io = require('socket.io-client');
-
-const socket = io(window.location.host);
-
-
 
 
 describe('api.js', function() {
-
-    let socketPromise;
 
     before((done) => {
         while (!api.isAccountLoaded()) {
             setTimeout(() => {}, 3000);
         }
-        socketPromise = new Promise((resolve, reject) => socket.on('EnergySystemTokenCreationEvent', (data) => {
-            resolve(data);
-        }))
         done();
     });
 
@@ -26,27 +16,19 @@ describe('api.js', function() {
     let _fundingGoal = web3.toWei(100)
     let _fundingPeriod = 100
     let _price = 100
+    let estoken;
 
     it('createEnergySystemToken', function(done) {
         this.timeout(60000)
         api.createEnergySystemToken(_initialAmount, _decimalUnits, _fundingGoal, _fundingPeriod, _price).then(res => {
-            assert(res);
+            console.log(1, res);
+            assert(res._contract, `res._contract`);
+            estoken = res._contract;
             done();
         });
     });
 
-    it('EnergySystemTokenCreationEvent', (done) => {
-        this.timeout(60000)
-        socketPromise.then(data => {
-            console.log(`Client Side: Received EnergySystemTokenCreationEvent with data ${data}`)
-            done();
-        })
-    })
-
-
-    let estoken;
-
-    it('getLastEnergySystemTokenAddressForUser', function(done) {
+    it.skip('getLastEnergySystemTokenAddressForUser', function(done) {
         this.timeout(30000)
         api.getLastEnergySystemTokenAddressForUser().then(res => {
             assert(res.from == web3.eth.defaultAccount);
@@ -56,7 +38,7 @@ describe('api.js', function() {
     });
 
 
-    it('getAllEnergySystemTokenAddressesForUser', function(done) {
+    it.skip('getAllEnergySystemTokenAddressesForUser', function(done) {
         this.timeout(30000)
         api.getAllEnergySystemTokenAddressesForUser().then(res => {
             console.log(res);
@@ -65,7 +47,7 @@ describe('api.js', function() {
         });
     });
 
-    it('getAllEnergySystemTokenAddresses', function(done) {
+    it.skip('getAllEnergySystemTokenAddresses', function(done) {
         this.timeout(30000)
         api.getAllEnergySystemTokenAddressesForUser().then(res => {
             console.log(res);
@@ -74,7 +56,7 @@ describe('api.js', function() {
         });
     });
 
-    it('getEtherBalance', function(done) {
+    it.skip('getEtherBalance', function(done) {
         this.timeout(30000)
         api.getEtherBalance().then(res => {
             console.log(res);
@@ -83,7 +65,7 @@ describe('api.js', function() {
         });
     });
 
-    it('getDefaultAccount', function(done) {
+    it.skip('getDefaultAccount', function(done) {
         this.timeout(30000)
         let defaultaccount = api.getDefaultAccount();
         assert(defaultaccount == web3.eth.accounts[0]);
@@ -91,8 +73,7 @@ describe('api.js', function() {
     });
 
 
-    it('getEnergySystemTokenBalance', function(done) {
-        this.timeout(60000)
+    it.skip('getEnergySystemTokenBalance', function(done) {
         api.getEnergySystemTokenBalance(estoken).then(balance => {
             console.log("balance", balance);
             assert(balance == 100, `${balance} == 100`)
@@ -101,7 +82,7 @@ describe('api.js', function() {
     });
 
 
-    it('isAuthenticated', function(done) {
+    it.skip('isAuthenticated', function(done) {
         this.timeout(10000)
         api.isAuthenticated().then(res => {
             console.log(res);
@@ -109,7 +90,7 @@ describe('api.js', function() {
         })
     });
 
-    it('getTotalNumberOfTokens', function(done) {
+    it.skip('getTotalNumberOfTokens', function(done) {
         this.timeout(10000)
         api.getTotalNumberOfTokens(estoken).then(res => {
             console.log("totalsupply", res);
@@ -118,26 +99,82 @@ describe('api.js', function() {
         })
     });
 
+    let pricesSet = false;
 
-    it('setPrices', function(done) {
+    it.skip('setPrices', function(done) {
         this.timeout(60000)
         api.setPrices(estoken, web3.toWei(1), web3.toWei(1)).then(res => {
             assert(res, `${res}`)
+            pricesSet = true;
             done()
         })
     });
+
 
     it('buy', function(done) {
-        this.timeout(60000)
-        api.buy(estoken, web3.toWei(1)).then(res => {
-            assert(res, `${res}`)
-            done()
+        this.timeout(50000)
+
+        let p1;
+        if (!estoken) {
+            p1 = api.createEnergySystemToken(_initialAmount, _decimalUnits, _fundingGoal, _fundingPeriod, _price)
+        } else {
+            p1 = Promise.resolve({ _contract: estoken })
+        }
+
+        p1.then(res1 => {
+            estoken = res1._contract;
+
+            let p2;
+            if (!pricesSet) {
+                console.log(1);
+                p2 = api.setPrices(estoken, web3.toWei(1), web3.toWei(1))
+            } else {
+                console.log(2);
+                p2 = Promise.resolve();
+            }
+
+            p2.then(() => {
+                api.buy(estoken, web3.toWei(1)).then(res2 => {
+                    assert(res2, `${res2}`)
+                    done()
+                })
+            })
+
         })
     });
 
 
+    it.skip('sell', function(done) {
+        this.timeout(30000)
+        api.createEnergySystemToken(_initialAmount, _decimalUnits, _fundingGoal, _fundingPeriod, _price).then(res => {
+            api.getLastEnergySystemTokenAddressForUser().then(res => {
+                let estoken = res.contract;
+                api.setPrices(estoken, web3.toWei(1), web3.toWei(1)).then(res => {
+                    api.sell(estoken, 1).then(res => {
+                        assert(res, `${res}`)
+                        done()
+                    })
+                })
+            })
+        })
+    });
 
 
-
-
+    it.skip('getFulfilledOrders', function(done) {
+        this.timeout(60000)
+        api.createEnergySystemToken(_initialAmount, _decimalUnits, _fundingGoal, _fundingPeriod, _price).then(res => {
+            api.getLastEnergySystemTokenAddressForUser().then(res => {
+                estoken = res.contract;
+                api.buy(estoken, web3.toWei(1)).then(res => {
+                    api.sell(estoken, 1).then(res => {
+                        api.getFulfilledOrders(estoken).then(res => {
+                            console.log("getFulfilledOrders ", res);
+                            assert(res, `${res}`);
+                            done();
+                        });
+                    });
+                });
+            });
+        });
+    });
 });
