@@ -182,7 +182,7 @@ module.exports.sell = function(_energySystemTokenAddress, _value) {
     return getEnergySystemToken(_energySystemTokenAddress).then(estoken => {
         return fetch(`/EventListener?energySystemTokenAddress=${_energySystemTokenAddress}&eventName=Transfer&filter={ _from:${web3.eth.defaultAccount}}`).then(response => {
             return new Promise((resolve, reject) => {
-                estoken.sell(_value, { from: web3.eth.defaultAccount, gas:120000 }, (error, txhash) => {
+                estoken.sell(_value, { from: web3.eth.defaultAccount, gas: 120000 }, (error, txhash) => {
                     if (error) {
                         reject(error);
                     }
@@ -207,21 +207,33 @@ module.exports.getFulfilledOrders = function(_energySystemTokenAddress) {
 
 
 module.exports.getRaisedEther = function(_energySystemTokenAddress) {
-
+    return new Promise((resolve, reject) => {
+        web3.eth.getBalance(_energySystemTokenAddress, function(err, res) {
+            if (err)
+                reject(err);
+            else
+                resolve(res.toNumber());
+        });
+    })
 }
 
 
-// Kauf von tokens während der funding phase 
-module.exports.buyEnergySystemTokens = function(_energySystemTokenAddress, _value) {
-    // - sol function buyEnergySystemTokens()  
-}
-
-
-
-
-// Zurücktauschen von tokens gegen ether während der funding phase 
-module.exports.getPrice = function(_energySystemTokenAddress) {
+module.exports.getPrices = function(_energySystemTokenAddress) {
     // - sol function getMoneyBack() 
+    return getEnergySystemToken(_energySystemTokenAddress).then(estoken => {
+        return new Promise((resolve, reject) => {
+            estoken.sellPrice((error, sellPrice) => {
+                if (error) reject(error);
+                estoken.buyPrice((error, buyPrice) => {
+                    if (error) reject(error);
+                    resolve({
+                        buyPrice: buyPrice.toNumber(),
+                        sellPrice: sellPrice.toNumber()
+                    })
+                });
+            })
+        })
+    })
 }
 
 
