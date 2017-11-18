@@ -25,18 +25,30 @@ describe('api.test.js', function() {
 
     it('sendeBewegungsdaten', function(done) {
         this.timeout(25000)
-        request(server)
-            .post('/sendeBewegungsdaten')
-            .send({ distance: 105 })
-            .set('Accept', 'application/json')
-            .expect('Content-Type', /json/)
-            .expect(200)
-            .end(function(err, res) {
-                if (err) throw new Error(err);
-                assert(res.body.state.percentage_In_Current_Period == 1, `${res.body.state.percentage_In_Current_Period} == 1`)
-                assert(res.body.state.coins == 1, `res.body.state.coins == 1 : ${res.body.state.coins == 1}`)
-                done();
-            });
+        let promises = [];
+        let distance = 0;
+        for (let i = 0; i < 20; i++) {
+            distance += 10;
+            promises.push(
+                new Promise((resolve, reject) => {
+                    request(server)
+                        .post('/sendeBewegungsdaten')
+                        .send({ distance: distance })
+                        .set('Accept', 'application/json')
+                        .expect('Content-Type', /json/)
+                        .expect(200)
+                        .end(function(err, res) {
+                            if (err) throw new Error(err);
+                            resolve(res.body.state);
+                        })
+                })
+            )
+        }
+        Promise.all(promises).then((_values) => {
+            let last_State = _values[_values.length - 1];
+            assert(last_State.coins == 1, `last_State.coins == 1: ${last_State.coins == 1}`)
+            done();
+        })
     });
 
 
@@ -65,7 +77,6 @@ describe('api.test.js', function() {
             .expect(200)
             .end(function(err, res) {
                 if (err) throw new Error(err);
-
                 assert(res.body.state.coins == 0, `res.body.state.coins == 0: ${res.body.state.coins == 0}`)
                 done();
             });

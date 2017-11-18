@@ -31,6 +31,7 @@ let state = {
 }
 
 let coins_Received = false;
+let old_Distance = 0;
 
 /* ############## execute */
 
@@ -43,7 +44,6 @@ setInterval(reset, PERIOD_LENGTH);
 
 module.exports.sende_Bewegungsdaten = function(request, response) {
     let new_Distance = request.body.distance;
-    let old_Distance = state.distance_In_Current_Period;
     let diff = new_Distance - old_Distance;
 
     state.distance_In_Current_Period = new_Distance;
@@ -53,6 +53,7 @@ module.exports.sende_Bewegungsdaten = function(request, response) {
         state.percentage_In_Current_Period = 1;
         state.coins++;
         coins_Received = true;
+        old_Distance = state.distance_In_Current_Period;
     }
 
     response.json({ state });
@@ -67,6 +68,7 @@ module.exports.zahle_Aus = function(request, response) {
         response.json({ message: "Not enough coins left." })
     } else {
         state.coins -= value;
+        state.total_Rewards_in_Ether += value;
         send_Ether(value).then(_hash => {
             state.txhistory.push({ txhash: _hash, date: new Date(), value: value })
             response.json({ txhash: _hash, date: new Date(), value: value });
