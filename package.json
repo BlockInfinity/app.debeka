@@ -2,10 +2,9 @@
   "name": "inspinia-reactjs",
   "version": "2.7.0",
   "scripts": {
-    "start": "npm-run-all --parallel start:server start:testrpc start:build",
+    "start": "PW=enbwblockchain NODE_URL='http://localhost:8001/api/v1/namespaces/blockchain/services/geth-ropsten:8545/proxy/' npm-run-all --parallel start:server start:build",
     "start:server": "DEBUG='express:*' nodeUrl='http://localhost:8545' nodemon --ignore './server/contractData/' server.js",
     "start:build": "webpack --watch --config webpack.config.js",
-    "start:testrpc": "testrpc -m 'snake ozone true betray silver fault slice destroy file sweet comic naive' --accounts 100 --gasLimit 0x7A1200",
     "build": "BABEL_ENV=production ./node_modules/.bin/webpack --config webpack.config.production.js"
   },
   "keywords": [
