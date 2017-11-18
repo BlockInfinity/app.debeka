@@ -6,23 +6,14 @@ import routes from './config/routes';
 import jquery from 'jquery';
 import metismenu from 'metismenu';
 import bootstrap from 'bootstrap';
-import io from 'socket.io-client';
 
 import './../node_modules/bootstrap/dist/css/bootstrap.min.css'
 import './../node_modules/font-awesome/css/font-awesome.css'
 import './../node_modules/animate.css/animate.min.css'
 import './../public/styles/style.css'
-import './scripts/api.js'
-
-const socket = io(window.location.host);
 
 
-// check whether socket.io connection is established  
-socket.on('connect', onConnect);
 
-function onConnect(){
-  console.log('connect ' + socket.id);
-}
 
 
 ReactDOM.render(

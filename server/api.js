@@ -11,7 +11,7 @@ if (!process.env.NODE_URL) {
 
 
 const PERIOD_LENGTH = 120000;
-const DISTANCE_PER_PERIOD = 100;
+const DISTANCE_PER_PERIOD = 50;
 const REWARD_IN_ETHER_PER_PERIOD = 0.001;
 let web3;
 
@@ -70,14 +70,15 @@ module.exports.zahle_Aus = function(request, response) {
         state.coins -= value;
         state.total_Rewards_in_Ether += value;
         send_Ether(value).then(_hash => {
-            state.txhistory.push({ txhash: _hash, date: new Date(), value: value })
-            response.json({ txhash: _hash, date: new Date(), value: value });
+            state.txhistory.push({ txhash: _hash, date: new Date(), value: value, link: `https://ropsten.etherscan.io/tx/${_hash}` })
+            response.json({ txhash: _hash, date: new Date(), value: value, link: `https://ropsten.etherscan.io/tx/${_hash}` });
         })
     }
 
 }
 
 module.exports.get_State = function(request, response) {
+    console.log(`state: ${JSON.stringify(state)}`)
     response.json({ state });
 }
 
