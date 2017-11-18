@@ -10,8 +10,8 @@ if (!process.env.NODE_URL) {
 }
 
 
-const PERIOD_LENGTH = 120000;
-const DISTANCE_PER_PERIOD = 50;
+const PERIOD_LENGTH = 120000000;
+const DISTANCE_PER_PERIOD = 10;
 const REWARD_IN_ETHER_PER_PERIOD = 0.001;
 let web3;
 
@@ -23,8 +23,8 @@ const STATIC_PUB_KEY_USER = '0xf0433Ad2cddA1179D764a1d2410aB90cFB124B35';
 let state = {
     user_Account: STATIC_PUB_KEY_USER,
     watch_Account: STATIC_PUB_KEY_WATCH,
-    distance_In_Current_Period: 0,
-    percentage_In_Current_Period: 0,
+    distance_In_Current_Period: 1,
+    percentage_In_Current_Period: 10,
     coins: 0,
     txhistory: [],
     total_Rewards_in_Ether: 0

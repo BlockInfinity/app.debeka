@@ -28,7 +28,7 @@ describe('api.test.js', function() {
         let promises = [];
         let distance = 0;
         for (let i = 0; i < 20; i++) {
-            distance += 10;
+            distance += 1;
             promises.push(
                 new Promise((resolve, reject) => {
                     request(server)
