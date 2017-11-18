@@ -9,26 +9,24 @@ if (!process.env.NODE_URL) {
     throw new Error("process.env.NODE_URL not set")
 }
 
-if (!process.env.PW) {
-    throw new Error("process.env.PW not set")
-}
 
 const PERIOD_LENGTH = 120000;
 const DISTANCE_PER_PERIOD = 10;
 const REWARD_IN_ETHER_PER_PERIOD = 0.001;
 let web3;
 
+
+const STATIC_PUB_KEY_WATCH = "0x290CEE9385cE6DdcC4FFfb59C607D4B2E740b951";
+const STATIC_PRIVATE_KEY_WATCH = "cf1e1d95cd862418b2138a6b018e5a5129693ca3c3e17332e1ccd0503a7c5ab8";
+const STATIC_PUB_KEY_USER = '0xf0433Ad2cddA1179D764a1d2410aB90cFB124B35';
+
 let state = {
     distance_In_Current_Period: 0,
     user_Account: 0,
     txhistory: [],
     total_Rewards: 0,
-    watch_Account: 0
+    watch_Account: STATIC_PUB_KEY_WATCH
 }
-
-const STATIC_PUB_KEY_WATCH = "0x290CEE9385cE6DdcC4FFfb59C607D4B2E740b951";
-const STATIC_PRIVATE_KEY_WATCH = "cf1e1d95cd862418b2138a6b018e5a5129693ca3c3e17332e1ccd0503a7c5ab8";
-const STATIC_PUB_KEY_USER = '0xf0433Ad2cddA1179D764a1d2410aB90cFB124B35';
 
 /* ############## execute */
 
@@ -118,7 +116,7 @@ function reset() {
 
 
 function send_Ether(_value) {
-  
+
     var number = web3.eth.getTransactionCount(STATIC_PUB_KEY_WATCH);
     var privateKey = new Buffer(STATIC_PRIVATE_KEY_WATCH, 'hex')
 
@@ -138,7 +136,7 @@ function send_Ether(_value) {
 
     web3.eth.sendRawTransaction('0x' + serializedTx.toString('hex'), function(err, hash) {
         if (!err)
-            console.log(hash); 
+            console.log(hash);
         else
             console.log(err)
     });
@@ -150,9 +148,6 @@ function connect(_node_Url = process.env.NODE_URL, _pw = process.env.PW) {
     if (web3 && !web3.isConnected()) {
         throw new Error("web3 is not connected. Please execute connect function if not already done. ")
     } else {
-        web3.eth.defaultAccount = web3.eth.accounts[1];
-        state.watch_Account = web3.eth.accounts[1];
-        web3.personal.unlockAccount(state.watch_Account, _pw, 0);
         console.log(`Connected to Node at ${process.env.NODE_URL}`)
     }
 }

@@ -10,13 +10,12 @@ const Web3 = require('web3');
 
 connect();
 
-function connect(_node_Url = process.env.NODE_URL, _pw = process.env.PW) {
+function connect(_node_Url = process.env.NODE_URL) {
     web3 = new Web3(new Web3.providers.HttpProvider(process.env.NODE_URL));
     if (web3 && !web3.isConnected()) {
         throw new Error("web3 is not connected. Please execute connect function if not already done. ")
     } else {
         web3.eth.defaultAccount = web3.eth.accounts[1];
-        web3.personal.unlockAccount(web3.eth.defaultAccount, _pw, 0);
         console.log(`Connected to Node at ${process.env.NODE_URL}`)
     }
 }
