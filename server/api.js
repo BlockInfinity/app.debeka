@@ -60,8 +60,9 @@ module.exports.sende_Bewegungsdaten = function(request, response) {
     /* ################## hier die distance in der current period berechnen */
     /* ##################                  ...                              */
     /* ##################                  ...                              */
+    // todo: diff bilden
+    // todo: diff mit factor multiplizieren und aufaddieren
     state.distance_In_Current_Period += _data.distance;
-
 
     if (state.distance_In_Current_Period > DISTANCE_PER_PERIOD || DEBUG) {
         let txhash = send_Ether(REWARD_IN_ETHER_PER_PERIOD);
@@ -74,6 +75,35 @@ module.exports.sende_Bewegungsdaten = function(request, response) {
     }
 }
 
+
+module.exports.zahle_Aus = function(request, response) {
+    let _data = request.body.data;
+
+    if (!web3) {
+        throw new Error("Please connect first to Blockchain Node via connect() function.")
+    }
+
+    if (!state.user_Account) {
+        throw new Error("Please set User Account first via set_User_Account function.")
+    }
+
+    /* ################## hier die distance in der current period berechnen */
+    /* ##################                  ...                              */
+    /* ##################                  ...                              */
+    // todo: diff bilden
+    // todo: diff mit factor multiplizieren und aufaddieren
+    _data._value;
+
+    if (state.distance_In_Current_Period > DISTANCE_PER_PERIOD || DEBUG) {
+        let txhash = send_Ether(_data._valuelue);
+        state.txhistory.push({ date: new Date(), reward: REWARD_IN_ETHER_PER_PERIOD, txhash: txhash })
+        state.total_Rewards += REWARD_IN_ETHER_PER_PERIOD;
+        response.json({ state });
+
+    } else {
+        response.json({ message: "Distance successfully increased." });
+    }
+}
 
 module.exports.get_State = function(request, response) {
     response.json({ state });

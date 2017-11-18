@@ -21,13 +21,12 @@ function connect(_node_Url = process.env.NODE_URL, _pw = process.env.PW) {
     }
 }
 
-
 describe('api.test.js', function() {
 
     it('set_User_Account', function(done) {
         this.timeout(25000)
         request(server)
-            .post('/set_User_Account')
+            .post('/setUserAccount')
             .send({ account: web3.eth.accounts[2] })
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
@@ -42,7 +41,7 @@ describe('api.test.js', function() {
     it('sende_Bewegungsdaten', function(done) {
         this.timeout(25000)
         request(server)
-            .post('/sende_Bewegungsdaten')
+            .post('/sendeBewegungsdaten')
             .send({ data: { distance: 5 } })
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
@@ -57,7 +56,7 @@ describe('api.test.js', function() {
     it('get_State', function(done) {
         this.timeout(25000)
         request(server)
-            .get('/get_State')
+            .get('/state')
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
             .expect(200)
@@ -68,9 +67,4 @@ describe('api.test.js', function() {
                 done();
             });
     });
-
-
-
-
-
 });
