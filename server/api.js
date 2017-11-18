@@ -11,7 +11,7 @@ if (!process.env.NODE_URL) {
 
 
 const PERIOD_LENGTH = 120000;
-const DISTANCE_PER_PERIOD = 10;
+const DISTANCE_PER_PERIOD = 100;
 const REWARD_IN_ETHER_PER_PERIOD = 0.001;
 let web3;
 
@@ -21,12 +21,16 @@ const STATIC_PRIVATE_KEY_WATCH = "cf1e1d95cd862418b2138a6b018e5a5129693ca3c3e173
 const STATIC_PUB_KEY_USER = '0xf0433Ad2cddA1179D764a1d2410aB90cFB124B35';
 
 let state = {
+    user_Account: STATIC_PUB_KEY_USER,
+    watch_Account: STATIC_PUB_KEY_WATCH,
     distance_In_Current_Period: 0,
-    user_Account: 0,
+    percentage_In_Current_Period: 0,
+    coins: 0,
     txhistory: [],
-    total_Rewards: 0,
-    watch_Account: STATIC_PUB_KEY_WATCH
+    total_Rewards_in_Ether: 0
 }
+
+let coins_Received = false;
 
 /* ############## execute */
 
@@ -37,70 +41,38 @@ setInterval(reset, PERIOD_LENGTH);
 /* ############## exposed function */
 
 
-module.exports.set_User_Account = function(request, response) {
-    let _account = request.body.account || STATIC_PUB_KEY_USER;
-    state.user_Account = _account;
-    response.json({ succeeded: true });
-}
-
-
 module.exports.sende_Bewegungsdaten = function(request, response) {
-    let _data = request.body.data;
+    let new_Distance = request.body.distance;
+    let old_Distance = state.distance_In_Current_Period;
+    let diff = new_Distance - old_Distance;
 
-    if (!web3) {
-        throw new Error("Please connect first to Blockchain Node via connect() function.")
+    state.distance_In_Current_Period = new_Distance;
+    state.percentage_In_Current_Period = diff / DISTANCE_PER_PERIOD;
+
+    if (state.percentage_In_Current_Period >= 1 && coins_Received == false) {
+        state.percentage_In_Current_Period = 1;
+        state.coins++;
+        coins_Received = true;
     }
 
-    if (!state.user_Account) {
-        throw new Error("Please set User Account first via set_User_Account function.")
-    }
-
-    /* ################## hier die distance in der current period berechnen */
-    /* ##################                  ...                              */
-    /* ##################                  ...                              */
-    // todo: diff bilden
-    // todo: diff mit factor multiplizieren und aufaddieren
-    state.distance_In_Current_Period += _data.distance;
-
-    if (state.distance_In_Current_Period > DISTANCE_PER_PERIOD || DEBUG) {
-        let txhash = send_Ether(REWARD_IN_ETHER_PER_PERIOD);
-        state.txhistory.push({ date: new Date(), reward: REWARD_IN_ETHER_PER_PERIOD, txhash: txhash })
-        state.total_Rewards += REWARD_IN_ETHER_PER_PERIOD;
-        response.json({ state });
-
-    } else {
-        response.json({ message: "Distance successfully increased." });
-    }
+    response.json({ state });
 }
 
 
 module.exports.zahle_Aus = function(request, response) {
-    let _data = request.body.data;
+    let value = request.body.value;
 
-    if (!web3) {
-        throw new Error("Please connect first to Blockchain Node via connect() function.")
-    }
 
-    if (!state.user_Account) {
-        throw new Error("Please set User Account first via set_User_Account function.")
-    }
-
-    /* ################## hier die distance in der current period berechnen */
-    /* ##################                  ...                              */
-    /* ##################                  ...                              */
-    // todo: diff bilden
-    // todo: diff mit factor multiplizieren und aufaddieren
-    _data._value;
-
-    if (state.distance_In_Current_Period > DISTANCE_PER_PERIOD || DEBUG) {
-        let txhash = send_Ether(_data._valuelue);
-        state.txhistory.push({ date: new Date(), reward: REWARD_IN_ETHER_PER_PERIOD, txhash: txhash })
-        state.total_Rewards += REWARD_IN_ETHER_PER_PERIOD;
-        response.json({ state });
-
+    if (state.coins < value) {
+        response.json({ message: "Not enough coins left." })
     } else {
-        response.json({ message: "Distance successfully increased." });
+        state.coins -= value;
+        send_Ether(value).then(_hash => {
+            state.txhistory.push({ txhash: _hash, date: new Date(), value: value })
+            response.json({ txhash: _hash, date: new Date(), value: value });
+        })
     }
+
 }
 
 module.exports.get_State = function(request, response) {
@@ -112,38 +84,41 @@ module.exports.get_State = function(request, response) {
 
 function reset() {
     state.distance_In_Current_Period = 0;
+    state.percentage_In_Current_Period = 0;
+    coins_Received = false;
 }
 
 
 function send_Ether(_value) {
+    return new Promise((resolve, reject) => {
+        var number = web3.eth.getTransactionCount(STATIC_PUB_KEY_WATCH);
+        var privateKey = new Buffer(STATIC_PRIVATE_KEY_WATCH, 'hex')
 
-    var number = web3.eth.getTransactionCount(STATIC_PUB_KEY_WATCH);
-    var privateKey = new Buffer(STATIC_PRIVATE_KEY_WATCH, 'hex')
+        var rawTx = {
+            nonce: number,
+            gasPrice: '0x09184e72a000',
+            gasLimit: '0x10710',
+            to: state.user_Account,
+            value: web3.toHex(web3.toWei(_value, 'ether')),
+            data: '0x7f7465737432000000000000000000000000000000000000000000000000000000600057'
+        }
 
-    var rawTx = {
-        nonce: number,
-        gasPrice: '0x09184e72a000',
-        gasLimit: '0x10710',
-        to: state.user_Account,
-        value: web3.toHex(web3.toWei(_value, 'ether')),
-        data: '0x7f7465737432000000000000000000000000000000000000000000000000000000600057'
-    }
+        var tx = new Tx(rawTx);
+        tx.sign(privateKey);
 
-    var tx = new Tx(rawTx);
-    tx.sign(privateKey);
-
-    var serializedTx = tx.serialize();
-
-    web3.eth.sendRawTransaction('0x' + serializedTx.toString('hex'), function(err, hash) {
-        if (!err)
-            console.log(hash);
-        else
-            console.log(err)
-    });
-
+        var serializedTx = tx.serialize();
+        web3.eth.sendRawTransaction('0x' + serializedTx.toString('hex'), function(err, hash) {
+            if (!err) {
+                resolve(hash);
+            } else {
+                console.log(err);
+                reject(err);
+            }
+        });
+    })
 }
 
-function connect(_node_Url = process.env.NODE_URL, _pw = process.env.PW) {
+function connect(_node_Url = process.env.NODE_URL) {
     web3 = new Web3(new Web3.providers.HttpProvider(process.env.NODE_URL));
     if (web3 && !web3.isConnected()) {
         throw new Error("web3 is not connected. Please execute connect function if not already done. ")

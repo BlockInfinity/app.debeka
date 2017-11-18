@@ -6,7 +6,7 @@
     "start:server": "DEBUG='express:*' nodemon --ignore './server/contractData/' server.js",
     "start:build": "webpack --watch --config webpack.config.js",
     "build": "BABEL_ENV=production ./node_modules/.bin/webpack --config webpack.config.production.js",
-    "test": "PW=enbwblockchain NODE_URL='http://localhost:8001/api/v1/namespaces/blockchain/services/geth-ropsten:8545/proxy/' mocha ./test/api.test.js"
+    "test": "PW=enbwblockchain NODE_URL='https://ropsten.infura.io/' mocha ./test/api.test.js"
   },
   "keywords": [
     "inspinia",

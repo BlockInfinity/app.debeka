@@ -10,10 +10,6 @@ app.use(bodyParser.json()); // for parsing application/json
 
 app.use('/', express.static('public'))
 
-// Parameters: request.body.account
-app.post('/setUserAccount', (req, res) => {
-    api.set_User_Account(req, res);
-})
 
 // Parameters: request.body.data
 app.post('/sendeBewegungsdaten', (req, res) => {
@@ -25,7 +21,7 @@ app.get('/state', (req, res) => {
 })
 
 app.post('/zahleAus', (req, res) => {
-    //api.sende_Bewegungsdaten(req, res);
+    api.zahle_Aus(req, res);
 })
 
 app.listen(8000, function() {

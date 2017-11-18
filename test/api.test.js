@@ -7,6 +7,7 @@ var server = require('../server');
 const assert = require('assert');
 const co = require('co');
 const Web3 = require('web3');
+let web3;
 
 connect();
 
@@ -22,37 +23,40 @@ function connect(_node_Url = process.env.NODE_URL) {
 
 describe('api.test.js', function() {
 
-    it('set_User_Account', function(done) {
-        this.timeout(25000)
-        request(server)
-            .post('/setUserAccount')
-            .send({ account: web3.eth.accounts[2] })
-            .set('Accept', 'application/json')
-            .expect('Content-Type', /json/)
-            .expect(200)
-            .end(function(err, res) {
-                if (err) throw new Error(err);
-                assert(res.body.succeeded == true, `${res.body.succeded} == true`)
-                done();
-            });
-    });
-
-    it('sende_Bewegungsdaten', function(done) {
+    it('sendeBewegungsdaten', function(done) {
         this.timeout(25000)
         request(server)
             .post('/sendeBewegungsdaten')
-            .send({ data: { distance: 5 } })
+            .send({ distance: 105 })
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
             .expect(200)
             .end(function(err, res) {
                 if (err) throw new Error(err);
-                assert(res.body.state.distance_In_Current_Period == 5, `${res.body.state.distance_In_Current_Period} == 5`)
+                assert(res.body.state.percentage_In_Current_Period == 1, `${res.body.state.percentage_In_Current_Period} == 1`)
+                assert(res.body.state.coins == 1, `res.body.state.coins == 1 : ${res.body.state.coins == 1}`)
                 done();
             });
     });
 
-    it('get_State', function(done) {
+
+    it('zahleAus', function(done) {
+        this.timeout(25000)
+        request(server)
+            .post('/zahleAus')
+            .send({ value: 1 })
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .expect(200)
+            .end(function(err, res) {
+                if (err) throw new Error(err);
+                assert(res.body.txhash.startsWith("0x"), `${res.body.txhash} startsWith("0x")`)
+                done();
+            });
+    });
+
+
+    it('state', function(done) {
         this.timeout(25000)
         request(server)
             .get('/state')
@@ -61,8 +65,8 @@ describe('api.test.js', function() {
             .expect(200)
             .end(function(err, res) {
                 if (err) throw new Error(err);
-                console.log(res.body.state)
-                assert(res.body.state.distance_In_Current_Period == 5, `${res.body.state.distance_In_Current_Period} == 5`)
+
+                assert(res.body.state.coins == 0, `res.body.state.coins == 0: ${res.body.state.coins == 0}`)
                 done();
             });
     });
