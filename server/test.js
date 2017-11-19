@@ -1,13 +1,8 @@
 var request = require('request');
 
-
-
-
-
 update_Exchange_Rate().then(data => {
     console.log(data);
 })
-
 
 function update_Exchange_Rate() {
     return new Promise((resolve, reject) => {

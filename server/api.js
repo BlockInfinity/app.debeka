@@ -15,8 +15,8 @@ const DISTANCE_PER_PERIOD = 10;
 const REWARD_IN_ETHER_PER_PERIOD = 0.001;
 let ETHER_EXCHANGE = 0.000583;
 let EURO_EXCHANGE = 1.0;
+let REGULARITY_RATIO = 0.1;
 let web3;
-
 
 const STATIC_PUB_KEY_WATCH = "0x290CEE9385cE6DdcC4FFfb59C607D4B2E740b951";
 const STATIC_PRIVATE_KEY_WATCH = "cf1e1d95cd862418b2138a6b018e5a5129693ca3c3e17332e1ccd0503a7c5ab8";
@@ -29,6 +29,7 @@ let state = {
     percentage_In_Current_Period: 0.1,
     coins: 0,
     txhistory: [],
+    regularity: 0.35,
     total_Rewards_in_Ether: 0
 }
 
@@ -54,6 +55,7 @@ module.exports.sende_Bewegungsdaten = function(request, response) {
     if (state.percentage_In_Current_Period >= 1 && coins_Received == false) {
         state.percentage_In_Current_Period = 1;
         state.coins++;
+        state.regularity += REGULARITY_RATIO;
         coins_Received = true;
         old_Distance = state.distance_In_Current_Period;
     }
@@ -84,7 +86,6 @@ module.exports.get_State = function(request, response) {
     response.json({ state });
 }
 
-
 /* ############## internal functions */
 
 function reset() {
@@ -96,7 +97,6 @@ function reset() {
     state.percentage_In_Current_Period = 0;
     coins_Received = false;
 }
-
 
 function send_Ether(_value) {
     return new Promise((resolve, reject) => {
