@@ -109,7 +109,7 @@ class DebekaView extends Component {
                 </div>
                 <div className="progressCircle">
                     <div id="progress-value">2</div>
-                    <Circle percent={this.state.regularity * 10} strokeWidth="10" strokeColor="#22ace3" trailWidth="10" trailColor="#77d1ed"/>
+                    <Circle percent={this.state.regularity * 100} strokeWidth="10" strokeColor="#22ace3" trailWidth="10" trailColor="#77d1ed"/>
                 </div>
 
                <Modal
