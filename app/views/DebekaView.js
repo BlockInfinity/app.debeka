@@ -8,12 +8,12 @@ const ENDPOINT_URL = 'http://52.232.41.117:8000'
 const customStyles = {
   content : {
     top                   : '50%',
-    left                  : '50%',
+    left                  : '40%',
     right                 : 'auto',
     bottom                : 'auto',
     marginRight           : '-50%',
     transform             : 'translate(-50%, -50%)',
-    width                 : '50%'
+    width                 : '60%'
   }
 };
 
@@ -32,7 +32,8 @@ class DebekaView extends Component {
             euro: 0,
             txhistory: [],
             totalRewardsInEther: 0,
-            modalIsOpen: false
+            modalIsOpen: false,
+            regularity: 0
         }
 
         this.openModal = this.openModal.bind(this);
@@ -56,7 +57,8 @@ class DebekaView extends Component {
                         ether: responseJson.state.ether,
                         euro: responseJson.state.euro,
                         txhistory: responseJson.state.txhistory,
-                        totalRewardsInEther: responseJson.state.total_Rewards_in_Ether
+                        totalRewardsInEther: responseJson.state.total_Rewards_in_Ether,
+                        regularity: responseJson.state.regularity
                     })
                 })
                 .catch((error) => {
@@ -107,7 +109,7 @@ class DebekaView extends Component {
                 </div>
                 <div className="progressCircle">
                     <div id="progress-value">2</div>
-                    <Circle percent={this.state.percentageInCurrentPeriod * 100} strokeWidth="10" strokeColor="#22ace3" trailWidth="10" trailColor="#77d1ed"/>
+                    <Circle percent={this.state.regularity * 10} strokeWidth="10" strokeColor="#22ace3" trailWidth="10" trailColor="#77d1ed"/>
                 </div>
 
                <Modal
