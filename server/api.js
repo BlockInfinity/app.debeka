@@ -74,7 +74,6 @@ module.exports.zahle_Aus = function(request, response) {
             response.json({ txhash: _hash, date: new Date(), value: value, link: `https://ropsten.etherscan.io/tx/${_hash}` });
         })
     }
-
 }
 
 module.exports.get_State = function(request, response) {
