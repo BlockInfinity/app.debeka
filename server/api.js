@@ -12,6 +12,8 @@ if (!process.env.NODE_URL) {
 const PERIOD_LENGTH = 120000000;
 const DISTANCE_PER_PERIOD = 10;
 const REWARD_IN_ETHER_PER_PERIOD = 0.001;
+const ETHER_EXCHANGE = 0.000583;
+const EURO_EXCHANGE = 1.0;
 let web3;
 
 
@@ -60,14 +62,14 @@ module.exports.sende_Bewegungsdaten = function(request, response) {
 
 module.exports.zahle_Aus = function(request, response) {
     let value = request.body.value;
-
+    let ether = value * ETHER_EXCHANGE;
 
     if (state.coins < value) {
         response.json({ message: "Not enough coins left." })
     } else {
         state.coins -= value;
-        state.total_Rewards_in_Ether += value;
-        send_Ether(value).then(_hash => {
+        state.total_Rewards_in_Ether += ether;
+        send_Ether(ether).then(_hash => {
             state.txhistory.push({ txhash: _hash, date: new Date(), value: value, link: `https://ropsten.etherscan.io/tx/${_hash}` })
             response.json({ txhash: _hash, date: new Date(), value: value, link: `https://ropsten.etherscan.io/tx/${_hash}` });
         })
@@ -75,7 +77,8 @@ module.exports.zahle_Aus = function(request, response) {
 }
 
 module.exports.get_State = function(request, response) {
-    console.log(state)
+    state.ether = state.coins * ETHER_EXCHANGE;
+    state.euro = state.coins * EURO_EXCHANGE;
     console.log(`state: ${JSON.stringify(state)}`)
     response.json({ state });
 }

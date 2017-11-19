@@ -5,7 +5,7 @@ body {
 #euro-value {
 	position: absolute;
 	top: 144px;
-	left: 75px;
+	left: 92px;
 	font-size: 35px;
 	color: white;
 }
@@ -13,16 +13,16 @@ body {
 #debicoins {
 	position: absolute;
 	top: 148px;
-	left: 168px;
+	left: 182px;
 	font-size: 30px;
 	color: white;
 }
 
 #ether-value {
 	position: absolute;
-	top: 144px;
-	left: 285px;
-	font-size: 35px;
+	top: 156px;
+	left: 265px;
+	font-size: 24px;
 	color: white;
 }
 

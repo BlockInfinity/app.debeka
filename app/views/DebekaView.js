@@ -12,6 +12,8 @@ class DebekaView extends Component {
             distanceInCurrentPeriod: 0,
             percentageInCurrentPeriod: 0,
             coins: 0,
+            ether: 0,
+            euro: 0,
             txhistory: [],
             totalRewardsInEther: 0
         }
@@ -28,6 +30,8 @@ class DebekaView extends Component {
                     distanceInCurrentPeriod: responseJson.state.distance_In_Current_Period,
                     percentageInCurrentPeriod: responseJson.state.percentage_In_Current_Period,
                     coins: responseJson.state.coins,
+                    ether: responseJson.state.ether,
+                    euro: responseJson.state.euro,
                     txhistory: responseJson.state.txhistory,
                     totalRewardsInEther: responseJson.state.total_Rewards_in_Ether
                 })
@@ -41,8 +45,8 @@ class DebekaView extends Component {
         return (
             <div>
                 <div>
-                    <div id="euro-value">{this.state.coins} &euro;</div>
-                    <div id="ether-value">{this.state.coins * 0.000583}</div>
+                    <div id="euro-value">{this.state.euro} &euro;</div>
+                    <div id="ether-value">{this.state.ether}</div>
                     <div id="debicoins">{this.state.coins}</div>
                 </div>
                 <div className="progressbar">
