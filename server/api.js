@@ -10,7 +10,7 @@ if (!process.env.NODE_URL) {
     throw new Error("process.env.NODE_URL not set")
 }
 
-const PERIOD_LENGTH = 120000000;
+const PERIOD_LENGTH = 600000;
 const DISTANCE_PER_PERIOD = 10;
 const REWARD_IN_ETHER_PER_PERIOD = 0.001;
 let ETHER_EXCHANGE = 0.000583;
