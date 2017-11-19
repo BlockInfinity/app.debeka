@@ -57,7 +57,7 @@ module.exports.sende_Bewegungsdaten = function(request, response) {
 
     if (state.percentage_In_Current_Period >= 1 && coins_Received == false) {
         state.percentage_In_Current_Period = 1;
-        state.coins++;
+        state.coins += 5;
         state.regularity += REGULARITY_RATIO;
         coins_Received = true;
         old_Distance = state.distance_In_Current_Period;
