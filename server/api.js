@@ -4,6 +4,7 @@ const DEBUG = true;
 
 const Web3 = require('web3');
 const Tx = require('ethereumjs-tx');
+var request = require('request');
 
 if (!process.env.NODE_URL) {
     throw new Error("process.env.NODE_URL not set")
@@ -12,8 +13,8 @@ if (!process.env.NODE_URL) {
 const PERIOD_LENGTH = 120000000;
 const DISTANCE_PER_PERIOD = 10;
 const REWARD_IN_ETHER_PER_PERIOD = 0.001;
-const ETHER_EXCHANGE = 0.000583;
-const EURO_EXCHANGE = 1.0;
+let ETHER_EXCHANGE = 0.000583;
+let EURO_EXCHANGE = 1.0;
 let web3;
 
 
@@ -38,8 +39,8 @@ let old_Distance = 0;
 
 connect();
 setInterval(reset, PERIOD_LENGTH);
+setInterval(update_Exchange_Rate, 10000);
 let initial = false;
-
 
 /* ############## exposed function */
 
@@ -133,4 +134,13 @@ function connect(_node_Url = process.env.NODE_URL) {
     } else {
         console.log(`Connected to Node at ${process.env.NODE_URL}`)
     }
+}
+
+
+function update_Exchange_Rate() {
+    request('https://api.coinmarketcap.com/v1/ticker/', function(error, response, body) {
+        if (!error)
+            ETHER_EXCHANGE = 1 / JSON.parse(body)[1].price_usd;
+        console.log("Exchange Rate updated: ", ETHER_EXCHANGE)
+    })
 }
