@@ -5,8 +5,7 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var config = {
 
     entry: {
-        bundle: './app/index',
-        apiTest: "./app/mochaTests/apiTest.js",
+        bundle: './app/index'
     },
     output: {
         path: path.join(__dirname, '/public/'),

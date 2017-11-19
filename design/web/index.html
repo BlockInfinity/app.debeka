@@ -1,0 +1,258 @@
+<!--
+Author: W3layouts
+Author URL: http://w3layouts.com
+License: Creative Commons Attribution 3.0 Unported
+License URL: http://creativecommons.org/licenses/by/3.0/
+-->
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Website Template | Home :: w3layouts</title>
+		<link href="css/bootstrap.css" rel='stylesheet' type='text/css' />
+		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+		<script src="js/jquery.min.js"></script>
+		 <!-- Custom Theme files -->
+		<link href="css/style.css" rel='stylesheet' type='text/css' />
+   		 <!-- Custom Theme files -->
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+		</script>
+		<!---- animated-css ---->
+		<link href="css/animate.css" rel="stylesheet" type="text/css" media="all">
+		<script type="text/javascript" src="js/jquery.corner.js"></script> 
+		<script src="js/wow.min.js"></script>
+		<script>
+		 new WOW().init();
+
+		 //Progress-Bar Move
+		 function move() {
+			 var elem = document.getElementById("myBar");
+			 var width = 1;
+			 var id = setInterval(frame, 10);
+
+
+			 function frame() {
+				 if (width >= 100) {
+					 clearInterval(id);
+				 } else {
+					 width++;
+					 elem.style.width = width + '%';
+					 elem.innerHTML = width * 1 + '%';
+				 }
+			 }
+		 }
+
+		move();
+
+		</script>
+		<!---- animated-css ---->
+		<!---- start-smoth-scrolling---->
+		<script type="text/javascript" src="js/move-top.js"></script>
+		<script type="text/javascript" src="js/easing.js"></script>
+		<script type="text/javascript">
+			jQuery(document).ready(function($) {
+				$(".scroll").click(function(event){		
+					event.preventDefault();
+					$('html,body').animate({scrollTop:$(this.hash).offset().top},1000);
+				});
+			});
+		</script>
+		 <!---- start-smoth-scrolling---->
+		<!----webfonts--->
+		<link href='http://fonts.googleapis.com/css?family=Roboto:400,100,300,500,700,900' rel='stylesheet' type='text/css'>
+		<!---//webfonts--->
+		<!----start-top-nav-script---->
+		<script>
+			$(function() {
+				var pull 		= $('#pull');
+					menu 		= $('nav ul');
+					menuHeight	= menu.height();
+				$(pull).on('click', function(e) {
+					e.preventDefault();
+					menu.slideToggle();
+				});
+				$(window).resize(function(){
+	        		var w = $(window).width();
+	        		if(w > 320 && menu.is(':hidden')) {
+	        			menu.removeAttr('style');
+	        		}
+	    		});
+			});
+		</script>
+		<!----//End-top-nav-script---->
+	</head>
+	<body>
+		<div class="bg">
+		<!----- start-header---->
+		<div class="container">
+			<div id="home" class="header wow bounceInDown" data-wow-delay="0.4s">
+					<div class="top-header">
+						<div class="logo">
+							<a id ="DebiLogo" href="#"></a>
+						</div>
+						<!----start-top-nav---->
+						 <nav class="top-nav">
+							<ul class="top-nav">
+								<li><a href="#about" class="scroll">about</a></li>
+								<li><a href="#process" class="scroll">process</a></li>
+								<li><a href="#port" class="scroll">portfolio</a></li>
+								<li class="page-scroll"><a href="#contact" class="scroll">contact</a></li>
+								<li class="active-join" class="page-scroll"><a href="#team" class="scroll">join us</a></li>
+							</ul>
+							<a href="#" id="pull"><img src="images/nav-icon.png" title="menu" /></a>
+						</nav>
+						<div class="clearfix"> </div>
+					</div>
+				</div>
+			</div>
+			<!----- //End-header---->
+			<!---- banner-info ---->
+			<div class="banner-info">
+				<div class="container">
+
+					<div class="buttonRow">
+						<a id ="payOutEuro" href="#"><div class="arrowLeft">6 EURO<br>payout</div></a>
+						<div class="arrowMiddle">6 D-Coins</div>
+						<a id ="payOutEth" href="#"><div class="arrowRight">0.0023 ETH<br>payout</div></a>
+						</div>
+
+					<h1 ><span id="week">Week X</span><br><label style="width: 80%">
+						<h4>Current Progress:</h4>
+						<div id="myProgress">
+						<div id="myBar">20%</div>
+					</div></label></h1>
+
+					<h1 ><span>Monthly Continuity: </span></h1>
+
+						<div class="graf">
+							<div class="cheatButton">1.</div>
+							<div class="loader"></div>
+						</div>
+
+				<div class="top-banner-grids wow bounceInUp" data-wow-delay="0.4s">
+					<div class="banner-grid text-center">
+						<span class="top-icon1"> </span>
+						<h3>Tarif</h3>
+					</div>
+					<div class="banner-grid banner-grid-active text-center">
+						<span class="top-icon2"> </span>
+						<h3>Cycle</h3>
+					</div>
+					<div class="banner-grid text-center">
+						<span class="top-icon3"> </span>
+						<h3>Bonus</h3>
+					</div>
+					<div class="clearfix"> </div>
+				</div>
+				</div>
+			</div>
+			<div class="clearfix"> </div>
+		</div>
+			<!---- banner-info ---->
+			<!---- top-grids ---->
+			<div class="top-grids text-center">
+				<div class="container">
+					<div class="col-md-3 wow bounceIn" data-wow-delay="0.4s">
+						<div class="top-grid">
+							<!-- <span class="icon1"> </span> -->
+
+							<h3><a href="#">right strategy</a></h3>
+							<label> </label>
+							<p>This is Photoshop's version  of Lorem Ipsum. Proin gravida nibh vel velit auctor aliquet. Aenean sollicitudin,</p>
+						</div>
+					</div>
+					<div class="col-md-3 wow bounceIn" data-wow-delay="0.4s">
+						<div class="top-grid">
+							<span class="icon2"> </span>
+							<h3><a href="#">adaptive style</a></h3>
+							<label> </label>
+							<p>This is Photoshop's version  of Lorem Ipsum. Proin gravida nibh vel velit auctor aliquet. Aenean sollicitudin,</p>
+						</div>
+					</div>
+					<div class="col-md-3 wow bounceIn" data-wow-delay="0.4s">
+						<div class="top-grid">
+							<span class="icon3"> </span>
+							<h3><a href="#">money making</a></h3>
+							<label> </label>
+							<p>This is Photoshop's version  of Lorem Ipsum. Proin gravida nibh vel velit auctor aliquet. Aenean sollicitudin,</p>
+						</div>
+					</div>
+					<div class="col-md-3 wow bounceIn" data-wow-delay="0.4s">
+						<div class="top-grid">
+							<span class="icon4"> </span>
+							<h3><a href="#">brand keaping</a></h3>
+							<label> </label>
+							<p>This is Photoshop's version  of Lorem Ipsum. Proin gravida nibh vel velit auctor aliquet. Aenean sollicitudin,</p>
+						</div>
+					</div>
+					<div class="clearfix"> </div>
+				</div>
+			</div>
+			<!---- top-grids ---->
+			<!---- about ---->
+			<div id="about" class="about">
+				<div class="head-section">
+					<div class="container">
+						<h3 id="Value"><span>about</span><label>Test</label></h3>
+					</div>
+				</div>
+					<!--- about-grids ---->
+					<div class="about-grids">
+						<div class="col-md-4 about-grid about-grid1 wow fadeInLeft" data-wow-delay="0.4s">
+							<div class="about-grid-info">
+								<h4><a href="#">this is a point about the company</a></h4>
+								<p>This is Photoshop's version  of Lorem Ipsum. Proin gravida nibh vel velit auctor aliquet. Aenean sollicitudin, lorem quis bibendum auctor, nisi elit consequat ipsum, nec sagittis sem nibh id elit. Duis sed odio sit amet nibh vulputate cursus a sit amet mauris. Morbi accumsan ipsum velit. Nam nec tellus a odio tincidunt auctor a ornare odio. Sed </p>
+							</div>
+							<div class="about-grid-pic">
+							<img src="images/about-pic1.jpg" title="name" />
+							</div>
+						</div>
+						<div class="col-md-4 about-grid about-grid2 wow fadeInUp" data-wow-delay="0.4s">
+							<div class="about-grid-pic">
+							<img src="images/about-pic2.jpg" title="name" />
+							</div>
+							<div class="about-grid-info">
+								<h4><a href="#">this is a point about the company</a></h4>
+								<p>This is Photoshop's version  of Lorem Ipsum. Proin gravida nibh vel velit auctor aliquet. Aenean sollicitudin, lorem quis bibendum auctor, nisi elit consequat ipsum, nec sagittis sem nibh id elit. Duis sed odio sit amet nibh vulputate cursus a sit amet mauris. Morbi accumsan ipsum velit. Nam nec tellus a odio tincidunt auctor a ornare odio. Sed </p>
+							</div>
+						</div>
+						<div class="col-md-4 about-grid about-grid1 wow fadeInRight" data-wow-delay="0.4s">
+							<div class="about-grid-info">
+								<h4><a href="#">this is a point about the company</a></h4>
+								<p>This is Photoshop's version  of Lorem Ipsum. Proin gravida nibh vel velit auctor aliquet. Aenean sollicitudin, lorem quis bibendum auctor, nisi elit consequat ipsum, nec sagittis sem nibh id elit. Duis sed odio sit amet nibh vulputate cursus a sit amet mauris. Morbi accumsan ipsum velit. Nam nec tellus a odio tincidunt auctor a ornare odio. Sed </p>
+							</div>
+							<div class="about-grid-pic">
+							<img src="images/about-pic3.jpg" title="name" />
+							</div>
+						</div>
+						<div class="clearfix"> </div>
+					</div>
+					<!--- /about-grids ---->
+				</div>
+			</div>
+			<!---- about ----> 
+
+
+					<script type="text/javascript">
+									$(document).ready(function() {
+										/*
+										var defaults = {
+								  			containerID: 'toTop', // fading element id
+											containerHoverID: 'toTopHover', // fading element hover id
+											scrollSpeed: 1200,
+											easingType: 'linear' 
+								 		};
+										*/
+										
+										$().UItoTop({ easingType: 'easeOutQuart' });
+										
+									});
+								</script>
+				<a href="#" id="toTop" style="display: block;"> <span id="toTopHover" style="opacity: 1;"> </span></a>
+				</div>
+			</div>
+			<!---- footer --->
+		</div>
+	</body>
+</html>
+
