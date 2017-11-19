@@ -9,7 +9,6 @@ if (!process.env.NODE_URL) {
     throw new Error("process.env.NODE_URL not set")
 }
 
-
 const PERIOD_LENGTH = 120000000;
 const DISTANCE_PER_PERIOD = 10;
 const REWARD_IN_ETHER_PER_PERIOD = 0.001;
@@ -24,7 +23,7 @@ let state = {
     user_Account: STATIC_PUB_KEY_USER,
     watch_Account: STATIC_PUB_KEY_WATCH,
     distance_In_Current_Period: 1,
-    percentage_In_Current_Period: 10,
+    percentage_In_Current_Period: 0.1,
     coins: 0,
     txhistory: [],
     total_Rewards_in_Ether: 0
@@ -37,10 +36,10 @@ let old_Distance = 0;
 
 connect();
 setInterval(reset, PERIOD_LENGTH);
+let initial = false;
 
 
 /* ############## exposed function */
-
 
 module.exports.sende_Bewegungsdaten = function(request, response) {
     let new_Distance = request.body.distance;
@@ -59,7 +58,6 @@ module.exports.sende_Bewegungsdaten = function(request, response) {
     response.json({ state });
 }
 
-
 module.exports.zahle_Aus = function(request, response) {
     let value = request.body.value;
 
@@ -77,6 +75,7 @@ module.exports.zahle_Aus = function(request, response) {
 }
 
 module.exports.get_State = function(request, response) {
+    console.log(state)
     console.log(`state: ${JSON.stringify(state)}`)
     response.json({ state });
 }
@@ -85,6 +84,10 @@ module.exports.get_State = function(request, response) {
 /* ############## internal functions */
 
 function reset() {
+    if (!initial) {
+        initial = true
+        return
+    }
     state.distance_In_Current_Period = 0;
     state.percentage_In_Current_Period = 0;
     coins_Received = false;
