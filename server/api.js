@@ -22,6 +22,7 @@ const STATIC_PUB_KEY_WATCH = "0x290CEE9385cE6DdcC4FFfb59C607D4B2E740b951";
 const STATIC_PRIVATE_KEY_WATCH = "cf1e1d95cd862418b2138a6b018e5a5129693ca3c3e17332e1ccd0503a7c5ab8";
 const STATIC_PUB_KEY_USER = '0xf0433Ad2cddA1179D764a1d2410aB90cFB124B35';
 
+
 let state = {
     user_Account: STATIC_PUB_KEY_USER,
     watch_Account: STATIC_PUB_KEY_WATCH,
@@ -93,8 +94,9 @@ function reset() {
         initial = true
         return
     }
-    state.distance_In_Current_Period = 0;
-    state.percentage_In_Current_Period = 0;
+    state.coins = 7;
+    state.distance_In_Current_Period = 1;
+    state.percentage_In_Current_Period = 0.1;
     coins_Received = false;
 }
 
