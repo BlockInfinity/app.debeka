@@ -26,8 +26,8 @@ const STATIC_PUB_KEY_USER = '0xf0433Ad2cddA1179D764a1d2410aB90cFB124B35';
 let state = {
     user_Account: STATIC_PUB_KEY_USER,
     watch_Account: STATIC_PUB_KEY_WATCH,
-    distance_In_Current_Period: 3,
-    percentage_In_Current_Period: 0.3,
+    distance_In_Current_Period: 1,
+    percentage_In_Current_Period: 0.1,
     coins: 7,
     txhistory: [],
     regularity: 0.35,
