@@ -28,7 +28,7 @@ let state = {
     watch_Account: STATIC_PUB_KEY_WATCH,
     distance_In_Current_Period: 1,
     percentage_In_Current_Period: 0.1,
-    coins: 7,
+    coins: 4,
     txhistory: [],
     regularity: 0.35,
     total_Rewards_in_Ether: 0
