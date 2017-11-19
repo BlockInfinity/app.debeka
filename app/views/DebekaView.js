@@ -101,7 +101,7 @@ class DebekaView extends Component {
             <div>
                 <div>
                     <div id="euro-value">{this.state.euro} &euro;</div>
-                    <div id="ether-value" onClick={this.openModal}>{this.state.ether}</div>
+                    <div id="ether-value" onClick={this.openModal}>{String(this.state.ether).substring(0, 5)}</div>
                     <div id="debicoins">{this.state.coins}</div>
                 </div>
                 <div className="progressbar">
